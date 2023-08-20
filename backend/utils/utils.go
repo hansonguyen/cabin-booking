@@ -1,8 +1,10 @@
 package utils
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type Booking struct {
-	ID        string `json:"id"`
-	UserId    string `json:"userId"`
-	StartDate string `json:"startDate"`
-	EndDate   string `json:"endDate"`
+	ID        primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	UserId    string `bson:"userId" json:"userId"`
+	StartDate string `bson:"startDate" json:"startDate"`
+	EndDate   string `bson:"endDate" json:"endDate"`
 }
