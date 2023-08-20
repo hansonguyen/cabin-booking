@@ -1,1 +1,1 @@
-# smith-cabin
+# Smith Cabin Booking
