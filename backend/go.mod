@@ -1,4 +1,4 @@
-module api/booking
+module github.com/hansonguyen/smith-cabin/backend
 
 go 1.21.0
 
