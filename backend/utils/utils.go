@@ -4,7 +4,9 @@ import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type Booking struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
-	UserId    string `bson:"userId" json:"userId"`
-	StartDate string `bson:"startDate" json:"startDate"`
-	EndDate   string `bson:"endDate" json:"endDate"`
+	UserId    string	`bson:"userId" json:"userId"`
+	Title 		string	`bson:"title" json:"title"`
+	Start 		string	`bson:"start" json:"start"`
+	End   		string	`bson:"end" json:"end"`
+	AllDay		bool		`bson:"allDay" json:"allDay"`
 }
