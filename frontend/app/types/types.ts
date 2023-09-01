@@ -4,12 +4,14 @@ export type Event = {
   title: string
   start: Date
   end: Date
+  allDay: boolean
 }
 
 export type EventApiResponse = {
-  _id: string
+  _id?: string
   userId: string
   title: string
   start: string
   end: string
+  allDay: boolean
 }

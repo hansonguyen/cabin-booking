@@ -1,4 +1,5 @@
-import { Event } from "../types/types"
+// Types
+import { Event } from '../types/types'
 
 interface EventComponentProps {
   event: Event

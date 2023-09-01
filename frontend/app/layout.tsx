@@ -1,4 +1,5 @@
 import { Inter } from 'next/font/google'
+import './globals.css'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -17,7 +18,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={inter.className}>
-      <body>{children}</body>
+      <body>
+        <h1 className="text-6xl font-bold text-center mt-4">Smith Cabin</h1>
+        {children}
+      </body>
     </html>
   )
 }
