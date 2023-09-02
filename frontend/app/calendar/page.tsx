@@ -1,8 +1,7 @@
-// Components
-import MainCalendar from './MainCalendar'
-import NewEvent from '../components/NewEvent'
 // Actions
 import { getEvents } from '../actions/actions'
+import NewEvent from '../components/NewEvent'
+import MainCalendar from './MainCalendar'
 
 async function CalendarPage() {
   const events = await getEvents()
