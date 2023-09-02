@@ -29,11 +29,18 @@ function EventComponent({ event }: EventComponentProps) {
   }
 
   return (
-    <span className="flex justify-between align-center">
-      {`${event.title} -${event.userId}`}
-      <Button isIconOnly variant="solid" onPress={onOpen}>
-        <FaRegTrashCan />
-      </Button>
+    <>
+      <span className="flex justify-between h-6">
+        {`${event.title} -${event.userId}`}
+        <Button
+          isIconOnly
+          variant="bordered"
+          onPress={onOpen}
+          className="border-none"
+        >
+          <FaRegTrashCan size="0.75rem" className='mb-[1rem]'/>
+        </Button>
+      </span>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
@@ -62,7 +69,7 @@ function EventComponent({ event }: EventComponentProps) {
           )}
         </ModalContent>
       </Modal>
-    </span>
+    </>
   )
 }
 

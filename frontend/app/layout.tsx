@@ -2,6 +2,7 @@ import './globals.css'
 
 import { Inter } from 'next/font/google'
 
+import MainNavbar from './components/Navbar'
 import { Providers } from './providers'
 
 const inter = Inter({
@@ -23,7 +24,7 @@ export default function RootLayout({
     <html lang="en" className={inter.className}>
       <body>
         <Providers>
-          <h1 className="text-6xl font-bold text-center mt-4">Smith Cabin</h1>
+          <MainNavbar />
           {children}
         </Providers>
       </body>

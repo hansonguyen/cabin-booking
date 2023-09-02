@@ -1,7 +1,8 @@
 'use client'
 // Actions
-import { handleSubmit } from '../actions/actions'
 import { Button, Input } from '@nextui-org/react'
+
+import { handleSubmit } from '../actions/actions'
 
 function NewEvent() {
   return (
