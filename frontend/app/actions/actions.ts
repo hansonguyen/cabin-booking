@@ -1,8 +1,9 @@
 'use server'
 // Types
-import { EventApiResponse, Event } from '../types/types'
 // Other
 import { revalidateTag } from 'next/cache'
+
+import { Event,EventApiResponse } from '../types/types'
 
 /**
  * Get list of all events from API
@@ -13,7 +14,11 @@ export const getEvents = async (): Promise<Event[]> => {
     next: { revalidate: 0, tags: ['events'] }
   })
   const rawData = await response.json()
-  
+
+  if (!rawData) {
+    return []
+  }
+
   // Reformat data to proper format
   const cleanedData: Event[] = rawData.map((data: EventApiResponse) => {
     return {
@@ -34,19 +39,19 @@ export const handleSubmit = async (formData: FormData) => {
   // Validate entries
   const title = formData.get('title')?.valueOf()
   if (typeof title !== 'string' || title.length === 0)
-    throw new Error('Invalid title')
+    throw new Error('Invalid title.')
 
   const userId = formData.get('userId')?.valueOf()
   if (typeof userId !== 'string' || userId.length === 0)
-    throw new Error('Invalid User Id')
+    throw new Error('Invalid User Id.')
 
   const start = formData.get('start')?.valueOf()
   if (typeof start !== 'string' || start.length === 0)
-    throw new Error('Invalid Start Date')
+    throw new Error('Invalid Start Date.')
 
   const end = formData.get('end')?.valueOf()
   if (typeof end !== 'string' || end.length === 0)
-    throw new Error('Invalid End Date')
+    throw new Error('Invalid End Date.')
 
   const event: EventApiResponse = {
     title: title,
@@ -70,7 +75,7 @@ export const handleSubmit = async (formData: FormData) => {
 
 /**
  * Delete a single event with API
- * @param event 
+ * @param event
  */
 export const handleDelete = async (event: Event) => {
   if (!event) throw new Error('No event selected')
