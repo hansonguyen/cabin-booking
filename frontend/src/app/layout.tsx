@@ -2,7 +2,7 @@ import './globals.css'
 
 import { Poppins } from 'next/font/google'
 
-import MainNavbar from './components/Navbar'
+import MainNavbar from '.././components/Navbar'
 import { Providers } from './providers'
 
 const poppins = Poppins({
