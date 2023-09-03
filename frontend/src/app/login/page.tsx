@@ -1,18 +1,21 @@
 'use client'
 
-import { Button, Input } from '@nextui-org/react'
+import { Button } from '@nextui-org/react'
+import { signIn, useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 function Login() {
+  const { status } = useSession()
+  const router = useRouter()
+
+  if (status === 'authenticated') {
+    router.push('calendar')
+  }
+
   return (
-    <form className="sm:max-w-[75%] lg:max-w-[50%] mx-auto flex flex-col gap-4 bg-slate-200 rounded-md">
-      <label>Email</label>
-      <Input type="email" name="email" />
-      <div className='text-center'>
-        <Button type="submit" className="w-1/5">
-          Login
-        </Button>
-      </div>
-    </form>
+    <div className='text-center'>
+      <Button onClick={() => signIn('cognito')}>Login with Cognito</Button>
+    </div>
   )
 }
 

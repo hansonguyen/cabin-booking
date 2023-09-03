@@ -12,7 +12,7 @@ import {
   NavbarContent,
   NavbarItem
 } from '@nextui-org/react'
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React from 'react'
@@ -88,10 +88,7 @@ function MainNavbar() {
           </Dropdown>
         ) : (
           <NavbarItem>
-            {/* <Link href="/login" color="primary">
-              Login
-            </Link> */}
-            <Button onClick={() => signIn()}>Login</Button>
+            <Button onClick={() => router.push('/login')}>Login</Button>
           </NavbarItem>
         )}
       </NavbarContent>
