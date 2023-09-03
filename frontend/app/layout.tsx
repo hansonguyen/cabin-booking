@@ -1,11 +1,13 @@
 import './globals.css'
 
-import { Inter } from 'next/font/google'
+import { Poppins } from 'next/font/google'
 
 import MainNavbar from './components/Navbar'
 import { Providers } from './providers'
 
-const inter = Inter({
+const poppins = Poppins({
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
   subsets: ['latin'],
   display: 'swap'
 })
@@ -20,8 +22,10 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  // const session = await getServerSession(authOptions)
+
   return (
-    <html lang="en" className={inter.className}>
+    <html lang="en" className={poppins.className}>
       <body>
         <Providers>
           <MainNavbar />
