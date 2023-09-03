@@ -1,10 +1,7 @@
-function Profile() {
+import ProfileCard from './ProfileCard'
 
-  return (
-    <>
-      <h1>Profile page</h1>
-    </>
-  )
+async function Profile() {
+  return <ProfileCard />
 }
 
 export default Profile

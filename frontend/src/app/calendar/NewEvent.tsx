@@ -38,13 +38,15 @@ function NewEvent({ events }: NewEventProps) {
           if (typeof userId !== 'string' || userId.length === 0)
             throw new Error('Invalid User Id.')
 
-          const start = formData.get('start')?.valueOf()
-          if (typeof start !== 'string' || start.length === 0)
+          const startStr = formData.get('start')?.valueOf()
+          if (typeof startStr !== 'string' || startStr.length === 0)
             throw new Error('Invalid Start Date.')
+          const start = new Date(startStr)
 
-          const end = formData.get('end')?.valueOf()
-          if (typeof end !== 'string' || end.length === 0)
+          const endStr = formData.get('end')?.valueOf()
+          if (typeof endStr !== 'string' || endStr.length === 0)
             throw new Error('Invalid End Date.')
+          const end = new Date(endStr)
 
           const newEvent: Event = {
             _id: Math.random().toString(),
