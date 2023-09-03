@@ -12,7 +12,7 @@ import {
   NavbarContent,
   NavbarItem
 } from '@nextui-org/react'
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React from 'react'
@@ -31,7 +31,7 @@ function MainNavbar() {
   return (
     <Navbar maxWidth="full" isBordered className="bg-slate-100 p-4">
       <NavbarBrand>
-        <Link href="/calendar" className="font-bold text-3xl">
+        <Link href="/" className="font-bold text-3xl">
           SMITH CABIN
         </Link>
       </NavbarBrand>
@@ -88,10 +88,7 @@ function MainNavbar() {
           </Dropdown>
         ) : (
           <NavbarItem>
-            {/* <Link href="/login" color="primary">
-              Login
-            </Link> */}
-            <Button onClick={() => signIn()}>Login</Button>
+            <Button onClick={() => router.push('/login')}>Login</Button>
           </NavbarItem>
         )}
       </NavbarContent>

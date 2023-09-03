@@ -1,6 +1,6 @@
 // Actions
-import { getEvents } from '../../actions/actions'
-import NewEvent from '../../components/NewEvent'
+import { getEvents } from '@/src/actions/actions'
+import NewEvent from '@/src/components/NewEvent'
 import MainCalendar from './MainCalendar'
 
 async function CalendarPage() {
