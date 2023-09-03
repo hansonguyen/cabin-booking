@@ -1,6 +1,7 @@
 'use client'
 import {
   Avatar,
+  Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -11,25 +12,20 @@ import {
   NavbarContent,
   NavbarItem
 } from '@nextui-org/react'
+import { useSession, signIn, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 import { BiHelpCircle, BiLogOut } from 'react-icons/bi'
 import { BsFillPersonFill, BsPersonCircle } from 'react-icons/bs'
 
-// temp variable to test signed in or not
-const isSignedIn = false
-
 function MainNavbar() {
   const router = useRouter()
+  const { data: session } = useSession()
 
   // Handle different menu clicks
   const handleHelp = () => {
     console.log('help')
-  }
-
-  const handleLogout = () => {
-    console.log('logout')
   }
 
   return (
@@ -41,7 +37,7 @@ function MainNavbar() {
       </NavbarBrand>
 
       <NavbarContent as="div" justify="end">
-        {isSignedIn ? (
+        {session ? (
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
               <Avatar
@@ -50,7 +46,7 @@ function MainNavbar() {
                 as="button"
                 className="transition-transform"
                 color="secondary"
-                name="Jason Hughes"
+                name={session?.user?.name ? session.user.name : ''}
                 src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
                 fallback={<BsPersonCircle size="3rem" />}
               />
@@ -59,7 +55,8 @@ function MainNavbar() {
               <DropdownSection showDivider>
                 <DropdownItem key="profile" className="h-14 gap-2">
                   <p className="font-semibold">Signed in as</p>
-                  <p className="font-semibold">zoey@example.com</p>
+                  <p className="font-semibold">{session?.user?.name}</p>
+                  <p className="font-semibold">{session?.user?.email}</p>
                 </DropdownItem>
               </DropdownSection>
               <DropdownSection showDivider>
@@ -83,7 +80,7 @@ function MainNavbar() {
                 color="danger"
                 className="text-danger"
                 startContent={<BiLogOut />}
-                onClick={handleLogout}
+                onClick={() => signOut()}
               >
                 Log Out
               </DropdownItem>
@@ -91,9 +88,10 @@ function MainNavbar() {
           </Dropdown>
         ) : (
           <NavbarItem>
-            <Link href="/login" color="primary">
+            {/* <Link href="/login" color="primary">
               Login
-            </Link>
+            </Link> */}
+            <Button onClick={() => signIn()}>Login</Button>
           </NavbarItem>
         )}
       </NavbarContent>
