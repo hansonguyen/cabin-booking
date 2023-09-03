@@ -28,22 +28,11 @@ const localizer = dateFnsLocalizer({
   locales
 })
 
-interface MainCalendarProps {
+type MainCalendarProps = {
   events: Event[]
 }
 
 const MainCalendar = ({ events }: MainCalendarProps) => {
-  /**
-   * Handler for clicking on an event
-   * @param event
-   */
-  // const handleSelectEvent = (event: Event) => {
-  //   const r = window.confirm('Would you like to remove this event?')
-  //   if (r) {
-  //     handleDelete(event)
-  //   }
-  // }
-
   return (
     <Calendar
       localizer={localizer}
@@ -54,7 +43,6 @@ const MainCalendar = ({ events }: MainCalendarProps) => {
       components={{
         event: EventComponent
       }}
-      // onSelectEvent={(event) => handleSelectEvent(event)}
     />
   )
 }

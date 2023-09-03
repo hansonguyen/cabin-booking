@@ -15,12 +15,14 @@ import { FaRegTrashCan } from 'react-icons/fa6'
 import { handleDelete } from '@/src/actions/actions'
 // Types
 import { Event } from '@/src/types/types'
+import { useSession } from 'next-auth/react'
 
-interface EventComponentProps {
+type EventComponentProps = {
   event: Event
 }
 
 function EventComponent({ event }: EventComponentProps) {
+  const { data: session } = useSession()
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
   const handleDeletePress = (onClose: () => void) => {
@@ -32,14 +34,16 @@ function EventComponent({ event }: EventComponentProps) {
     <>
       <span className="flex justify-between h-6">
         {`${event.title} -${event.userId}`}
-        <Button
-          isIconOnly
-          variant="bordered"
-          onPress={onOpen}
-          className="border-none"
-        >
-          <FaRegTrashCan size="0.75rem" className='mb-[1rem]'/>
-        </Button>
+        {session?.user?.name === event.userId && (
+          <Button
+            isIconOnly
+            variant="bordered"
+            onPress={onOpen}
+            className="border-none"
+          >
+            <FaRegTrashCan size="0.75rem" className="mb-[1rem]" />
+          </Button>
+        )}
       </span>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>

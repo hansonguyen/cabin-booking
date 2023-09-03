@@ -3,7 +3,9 @@
 // Other
 import { revalidateTag } from 'next/cache'
 
-import { Event,EventApiResponse } from '../types/types'
+import { Event } from '../types/types'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '../utils/auth'
 
 /**
  * Get list of all events from API
@@ -20,7 +22,7 @@ export const getEvents = async (): Promise<Event[]> => {
   }
 
   // Reformat data to proper format
-  const cleanedData: Event[] = rawData.map((data: EventApiResponse) => {
+  const cleanedData: Event[] = rawData.map((data: Event) => {
     return {
       ...data,
       start: new Date(data.start),
@@ -36,12 +38,14 @@ export const getEvents = async (): Promise<Event[]> => {
  * @param formData
  */
 export const handleSubmit = async (formData: FormData) => {
+  const session = await getServerSession(authOptions)
+
   // Validate entries
   const title = formData.get('title')?.valueOf()
   if (typeof title !== 'string' || title.length === 0)
     throw new Error('Invalid title.')
 
-  const userId = formData.get('userId')?.valueOf()
+  const userId = session?.user?.name
   if (typeof userId !== 'string' || userId.length === 0)
     throw new Error('Invalid User Id.')
 
@@ -53,7 +57,7 @@ export const handleSubmit = async (formData: FormData) => {
   if (typeof end !== 'string' || end.length === 0)
     throw new Error('Invalid End Date.')
 
-  const event: EventApiResponse = {
+  const event: Event = {
     title: title,
     userId: userId,
     start: start,
