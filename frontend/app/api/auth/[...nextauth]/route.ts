@@ -2,6 +2,9 @@ import NextAuth from 'next-auth'
 import CognitoProvider from 'next-auth/providers/cognito'
 
 const handler = NextAuth({
+  // pages: {
+  //   signIn: '/login'
+  // },
   providers: [
     CognitoProvider({
       clientId: process.env.COGNITO_CLIENT_ID,
