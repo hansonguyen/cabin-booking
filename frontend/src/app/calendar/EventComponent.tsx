@@ -12,9 +12,9 @@ import {
 import { FaRegTrashCan } from 'react-icons/fa6'
 
 // Actions
-import { handleDelete } from '../actions/actions'
+import { handleDelete } from '../../actions/actions'
 // Types
-import { Event } from '../types/types'
+import { Event } from '../../types/types'
 
 interface EventComponentProps {
   event: Event
