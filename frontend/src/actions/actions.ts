@@ -3,7 +3,9 @@
 // Other
 import { revalidateTag } from 'next/cache'
 
-import { Event,EventApiResponse } from '../types/types'
+import { Event } from '../types/types'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '../utils/auth'
 
 /**
  * Get list of all events from API
@@ -18,9 +20,10 @@ export const getEvents = async (): Promise<Event[]> => {
   if (!rawData) {
     return []
   }
+  console.log(response.json())
 
   // Reformat data to proper format
-  const cleanedData: Event[] = rawData.map((data: EventApiResponse) => {
+  const cleanedData: Event[] = rawData.map((data: Event) => {
     return {
       ...data,
       start: new Date(data.start),
@@ -36,24 +39,28 @@ export const getEvents = async (): Promise<Event[]> => {
  * @param formData
  */
 export const handleSubmit = async (formData: FormData) => {
+  const session = await getServerSession(authOptions)
+
   // Validate entries
   const title = formData.get('title')?.valueOf()
   if (typeof title !== 'string' || title.length === 0)
     throw new Error('Invalid title.')
 
-  const userId = formData.get('userId')?.valueOf()
+  const userId = session?.user?.name
   if (typeof userId !== 'string' || userId.length === 0)
     throw new Error('Invalid User Id.')
 
-  const start = formData.get('start')?.valueOf()
-  if (typeof start !== 'string' || start.length === 0)
+  const startStr = formData.get('start')?.valueOf()
+  if (typeof startStr !== 'string' || startStr.length === 0)
     throw new Error('Invalid Start Date.')
+  const start = new Date(startStr)
 
-  const end = formData.get('end')?.valueOf()
-  if (typeof end !== 'string' || end.length === 0)
+  const endStr = formData.get('end')?.valueOf()
+  if (typeof endStr !== 'string' || endStr.length === 0)
     throw new Error('Invalid End Date.')
+  const end = new Date(endStr)
 
-  const event: EventApiResponse = {
+  const event: Event = {
     title: title,
     userId: userId,
     start: start,

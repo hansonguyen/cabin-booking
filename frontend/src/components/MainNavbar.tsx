@@ -55,7 +55,6 @@ function MainNavbar() {
               <DropdownSection showDivider>
                 <DropdownItem key="profile" className="h-14 gap-2">
                   <p className="font-semibold">Signed in as</p>
-                  <p className="font-semibold">{session?.user?.name}</p>
                   <p className="font-semibold">{session?.user?.email}</p>
                 </DropdownItem>
               </DropdownSection>
