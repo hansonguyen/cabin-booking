@@ -13,7 +13,7 @@ import React from 'react'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 
 // Types
-import { Event } from '../../types/types'
+import { Event } from '@/src/types/types'
 import EventComponent from './EventComponent'
 
 const locales = {

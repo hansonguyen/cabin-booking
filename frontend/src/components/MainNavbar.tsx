@@ -31,7 +31,7 @@ function MainNavbar() {
   return (
     <Navbar maxWidth="full" isBordered className="bg-slate-100 p-4">
       <NavbarBrand>
-        <Link href="/calendar" className="font-bold text-3xl">
+        <Link href="/" className="font-bold text-3xl">
           SMITH CABIN
         </Link>
       </NavbarBrand>
