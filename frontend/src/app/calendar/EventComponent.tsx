@@ -23,6 +23,7 @@ type EventComponentProps = {
 
 function EventComponent({ event }: EventComponentProps) {
   const { data: session } = useSession()
+  console.log(event)
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
   const handleDeletePress = (onClose: () => void) => {
@@ -33,8 +34,8 @@ function EventComponent({ event }: EventComponentProps) {
   return (
     <>
       <span className="flex justify-between h-6">
-        {`${event.title} -${event.userId}`}
-        {session?.user?.name === event.userId && (
+        {`${event.title} -${event.userName}`}
+        {session?.user?.id === event.userId && (
           <Button
             isIconOnly
             variant="bordered"

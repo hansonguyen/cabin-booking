@@ -1,5 +1,5 @@
 'use client'
-import { Card, CardBody, CardHeader, Image } from '@nextui-org/react'
+import { Card, CardBody, CardHeader } from '@nextui-org/react'
 import { useSession } from 'next-auth/react'
 
 export default function App() {

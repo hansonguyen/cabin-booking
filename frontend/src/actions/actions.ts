@@ -75,22 +75,27 @@ export const validateNewEvent = async (formData: FormData): Promise<Event> => {
   if (typeof title !== 'string' || title.length === 0)
     throw new Error('Invalid title.')
 
-  const userId = session?.user?.name
+  const userName = session?.user?.name
+  if (typeof userName !== 'string' || userName.length === 0)
+    throw new Error('Invalid user name.')
+
+  const userId = session?.user?.id
   if (typeof userId !== 'string' || userId.length === 0)
-    throw new Error('Invalid User Id.')
+    throw new Error('Invalid user ID.')
 
   const startStr = formData.get('start')?.valueOf()
   if (typeof startStr !== 'string' || startStr.length === 0)
-    throw new Error('Invalid Start Date.')
+    throw new Error('Invalid start date.')
   const start = new Date(startStr)
 
   const endStr = formData.get('end')?.valueOf()
   if (typeof endStr !== 'string' || endStr.length === 0)
-    throw new Error('Invalid End Date.')
+    throw new Error('Invalid end date.')
   const end = new Date(endStr)
 
   const newEvent: Event = {
     title: title,
+    userName: userName,
     userId: userId,
     start: start,
     end: end,
@@ -98,4 +103,8 @@ export const validateNewEvent = async (formData: FormData): Promise<Event> => {
   }
 
   return newEvent
+}
+
+export const findUser = () => {
+
 }
