@@ -1,8 +1,8 @@
 'use client'
 
 import { Button } from '@nextui-org/react'
-import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { signIn, useSession } from 'next-auth/react'
 
 function Login() {
   const { status } = useSession()

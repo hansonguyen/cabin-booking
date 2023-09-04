@@ -14,6 +14,7 @@ import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 
 // Types
 import { Event } from '@/src/types/types'
+
 import EventComponent from './EventComponent'
 
 const locales = {
@@ -39,7 +40,7 @@ const MainCalendar = ({ events }: MainCalendarProps) => {
       events={events}
       startAccessor="start"
       endAccessor="end"
-      style={{ height: 500, margin: '130px' }}
+      style={{ height: 500, margin: '4rem 8rem' }}
       components={{
         event: EventComponent
       }}
