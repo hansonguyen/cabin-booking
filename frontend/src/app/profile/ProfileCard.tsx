@@ -1,5 +1,5 @@
 'use client'
-import { Card, CardHeader, CardBody, Image } from '@nextui-org/react'
+import { Card, CardBody, CardHeader, Image } from '@nextui-org/react'
 import { useSession } from 'next-auth/react'
 
 export default function App() {
@@ -12,12 +12,6 @@ export default function App() {
         <small className="text-default-500">{session?.user?.email}</small>
       </CardHeader>
       <CardBody className="overflow-visible py-2">
-        <Image
-          alt="Card background"
-          className="object-cover rounded-xl"
-          src="/images/hero-card-complete.jpeg"
-          width={270}
-        />
       </CardBody>
     </Card>
   )

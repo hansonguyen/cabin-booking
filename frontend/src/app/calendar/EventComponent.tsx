@@ -9,13 +9,13 @@ import {
   ModalHeader,
   useDisclosure
 } from '@nextui-org/react'
+import { useSession } from 'next-auth/react'
 import { FaRegTrashCan } from 'react-icons/fa6'
 
 // Actions
 import { handleDelete } from '@/src/actions/actions'
 // Types
 import { Event } from '@/src/types/types'
-import { useSession } from 'next-auth/react'
 
 type EventComponentProps = {
   event: Event

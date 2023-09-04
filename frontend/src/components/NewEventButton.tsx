@@ -5,7 +5,7 @@ function NewEventButton() {
   const { pending } = useFormStatus()
 
   return (
-    <Button isDisabled={pending} type="submit" color="primary">
+    <Button isDisabled={pending} type="submit" color="primary" className='mt-4'>
       Create Event
     </Button>
   )

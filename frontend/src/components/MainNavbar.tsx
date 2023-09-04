@@ -12,9 +12,9 @@ import {
   NavbarContent,
   NavbarItem
 } from '@nextui-org/react'
-import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { signOut, useSession } from 'next-auth/react'
 import React from 'react'
 import { BiHelpCircle, BiLogOut } from 'react-icons/bi'
 import { BsFillPersonFill, BsPersonCircle } from 'react-icons/bs'
@@ -35,6 +35,16 @@ function MainNavbar() {
           SMITH CABIN
         </Link>
       </NavbarBrand>
+
+      {session && (
+        <NavbarContent justify="center">
+          <NavbarItem>
+            <Link aria-current="page" className='font-semibold text-xl' href="/calendar">
+              Calendar
+            </Link>
+          </NavbarItem>
+        </NavbarContent>
+      )}
 
       <NavbarContent as="div" justify="end">
         {session ? (
