@@ -1,10 +1,12 @@
 import '@/src/styles/globals.css'
+import 'react-toastify/dist/ReactToastify.css'
 
 import { Poppins } from 'next/font/google'
+import { ToastContainer } from 'react-toastify'
 
 import MainNavbar from '@/src/components/MainNavbar'
 
-import { Providers } from './providers'
+import { Providers } from '../components/providers'
 
 const poppins = Poppins({
   weight: ['400', '700'],
@@ -27,10 +29,11 @@ export default function RootLayout({
 
   return (
     <html lang="en" className={poppins.className}>
-      <body className='h-[100vh] w-[100vw]'>
+      <body className="h-[100vh] w-[100vw]">
         <Providers>
           <MainNavbar />
           {children}
+          <ToastContainer />
         </Providers>
       </body>
     </html>

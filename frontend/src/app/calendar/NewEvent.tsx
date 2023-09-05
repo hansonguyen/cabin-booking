@@ -1,12 +1,12 @@
 'use client'
-// Actions
 import { Input } from '@nextui-org/react'
-import { useSession } from 'next-auth/react'
 import { experimental_useOptimistic as useOptimistic, useRef } from 'react'
+import { toast } from 'react-toastify'
 
 import { createEvent, validateNewEvent } from '@/src/actions/actions'
 import NewEventButton from '@/src/components/NewEventButton'
 import { Event } from '@/src/types/types'
+import { isEvent } from '@/src/utils/utils'
 
 import MainCalendar from './MainCalendar'
 
@@ -15,7 +15,6 @@ type NewEventProps = {
 }
 
 function NewEvent({ events }: NewEventProps) {
-  const { data: session } = useSession()
   const ref = useRef<HTMLFormElement>(null)
   const [optimisticEvents, addOptimisticEvent] = useOptimistic(
     events,
@@ -25,15 +24,44 @@ function NewEvent({ events }: NewEventProps) {
   )
 
   const handleSubmit = async (formData: FormData) => {
+    const result = await validateNewEvent(formData)
+    if (!isEvent(result)) {
+      const toastId = 'validate-error'
+      toast.error(result.error, {
+        toastId,
+        position: 'top-center',
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored'
+      })
+      return
+    }
     ref.current?.reset()
-    const newEvent = await validateNewEvent(formData)
-    addOptimisticEvent(newEvent)
-    await createEvent(newEvent)
+    addOptimisticEvent(result)
+    await createEvent(result)
+    toast.success(`Successfully added ${result.title}.`, {
+      position: 'top-center',
+      autoClose: 2500,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'colored'
+    })
   }
 
   return (
     <>
-      <form ref={ref} action={(formData) => handleSubmit(formData)} className='text-center mt-4'>
+      <form
+        ref={ref}
+        action={(formData) => handleSubmit(formData)}
+        className="text-center mt-4"
+      >
         <div className="flex justify-center align-center gap-4 mt-4">
           <div className="flex flex-col">
             <label htmlFor="title">Title</label>

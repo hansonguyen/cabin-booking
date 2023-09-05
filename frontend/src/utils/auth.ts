@@ -24,5 +24,18 @@ export const authOptions: AuthOptions = {
       clientSecret: getCognitoVars().clientSecret,
       issuer: getCognitoVars().issuer
     })
-  ]
+  ],
+  callbacks: {
+    async session({ session, user, token }) {
+      const id = token.sub
+      if (!id) {
+        throw new Error('Invalid user.')
+      }
+      const _session = {
+        ...session,
+        user: { ...session.user, id }
+      }
+      return _session
+    }
+  }
 }

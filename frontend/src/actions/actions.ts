@@ -1,10 +1,8 @@
 'use server'
-// Types
-// Other
 import { revalidateTag } from 'next/cache'
 import { getServerSession } from 'next-auth'
 
-import { Event } from '../types/types'
+import { Event, EventSchema } from '../types/types'
 import { authOptions } from '../utils/auth'
 
 /**
@@ -68,34 +66,31 @@ export const handleDelete = async (event: Event) => {
   revalidateTag('events')
 }
 
-export const validateNewEvent = async (formData: FormData): Promise<Event> => {
+export const validateNewEvent = async (
+  formData: FormData
+): Promise<Event | { error: string }> => {
   const session = await getServerSession(authOptions)
 
-  const title = formData.get('title')?.valueOf()
-  if (typeof title !== 'string' || title.length === 0)
-    throw new Error('Invalid title.')
-
-  const userId = session?.user?.name
-  if (typeof userId !== 'string' || userId.length === 0)
-    throw new Error('Invalid User Id.')
-
-  const startStr = formData.get('start')?.valueOf()
-  if (typeof startStr !== 'string' || startStr.length === 0)
-    throw new Error('Invalid Start Date.')
-  const start = new Date(startStr)
-
-  const endStr = formData.get('end')?.valueOf()
-  if (typeof endStr !== 'string' || endStr.length === 0)
-    throw new Error('Invalid End Date.')
-  const end = new Date(endStr)
-
-  const newEvent: Event = {
-    title: title,
-    userId: userId,
-    start: start,
-    end: end,
+  const newEvent = {
+    title: formData.get('title')?.valueOf(),
+    userName: session?.user?.name,
+    userId: session?.user?.id,
+    start: formData.get('start')?.valueOf(),
+    end: formData.get('end')?.valueOf(),
     allDay: true
   }
 
-  return newEvent
+  const result = EventSchema.safeParse(newEvent)
+
+  if (!result.success) {
+    let errorMsg = ''
+    result.error.issues.forEach((issue) => {
+      errorMsg += issue.message + ' '
+    })
+    return {
+      error: errorMsg
+    }
+  }
+
+  return result.data
 }
