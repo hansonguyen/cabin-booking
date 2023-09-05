@@ -57,7 +57,7 @@ function MainNavbar() {
                 className="transition-transform"
                 color="secondary"
                 name={session?.user?.name ? session.user.name : ''}
-                src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                src="https://hansonn.com/assets/profile-pic.e5322a2a.jpg"
                 fallback={<BsPersonCircle size="3rem" />}
               />
             </DropdownTrigger>
