@@ -13,7 +13,7 @@ function Login() {
   }
 
   return (
-    <div className='text-center'>
+    <div className="text-center">
       <Button onClick={() => signIn('cognito')}>Login with Cognito</Button>
     </div>
   )

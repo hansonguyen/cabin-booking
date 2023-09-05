@@ -1,5 +1,4 @@
 'use client'
-// Components
 import {
   Button,
   Modal,
@@ -11,10 +10,9 @@ import {
 } from '@nextui-org/react'
 import { useSession } from 'next-auth/react'
 import { FaRegTrashCan } from 'react-icons/fa6'
+import { toast } from 'react-toastify'
 
-// Actions
 import { handleDelete } from '@/src/actions/actions'
-// Types
 import { Event } from '@/src/types/types'
 
 type EventComponentProps = {
@@ -23,12 +21,21 @@ type EventComponentProps = {
 
 function EventComponent({ event }: EventComponentProps) {
   const { data: session } = useSession()
-  console.log(event)
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
-  const handleDeletePress = (onClose: () => void) => {
-    handleDelete(event)
+  const handleDeletePress = async (onClose: () => void) => {
+    await handleDelete(event)
     onClose()
+    toast(`${event.title} was deleted.`, {
+      position: 'top-center',
+      autoClose: 2500,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'colored'
+    })
   }
 
   return (
