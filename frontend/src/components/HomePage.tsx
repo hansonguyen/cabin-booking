@@ -1,18 +1,20 @@
 'use client'
-import {Parallax, ParallaxLayer} from '@react-spring/parallax'
 import '@/src/styles/homePage.css';
+
+import {Parallax, ParallaxLayer} from '@react-spring/parallax'
 import Image from "next/image"
-import TextBlock  from './HomePageText'
 
 import background from '@/src/images/background.png'
-import mountain from '@/src/images/mountains.png'
-import logo from '@/src/images/logo_land.png'
 import j1 from '@/src/images/jungle1.png'
 import j2 from '@/src/images/jungle2.png'
 import j3 from '@/src/images/jungle3.png'
 import j4 from '@/src/images/jungle4.png'
 import j5 from '@/src/images/jungle5.png'
+import logo from '@/src/images/logo_land.png'
 import man from '@/src/images/man_on_mountain.png'
+import mountain from '@/src/images/mountains.png'
+
+import TextBlock  from './HomePageText'
 
 
 

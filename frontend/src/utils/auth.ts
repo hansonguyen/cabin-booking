@@ -5,7 +5,6 @@ const getCognitoVars = () => {
   const clientId = process.env.COGNITO_CLIENT_ID
   const clientSecret = process.env.COGNITO_CLIENT_SECRET
   const issuer = process.env.COGNITO_ISSUER
-
   if (!clientId || clientId.length === 0) throw new Error('Invalid client ID')
   if (!clientSecret || clientSecret.length === 0)
     throw new Error('Invalid client secret')
