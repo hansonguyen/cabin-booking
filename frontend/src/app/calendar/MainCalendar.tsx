@@ -40,6 +40,7 @@ const MainCalendar = ({ events }: MainCalendarProps) => {
       components={{
         event: EventComponent
       }}
+      views={['month', 'week']}
     />
   )
 }

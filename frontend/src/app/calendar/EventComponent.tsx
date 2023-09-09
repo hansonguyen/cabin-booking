@@ -9,11 +9,13 @@ import {
   useDisclosure
 } from '@nextui-org/react'
 import { useSession } from 'next-auth/react'
-import { FaRegTrashCan } from 'react-icons/fa6'
+import { FaPlus,FaMinus, FaRegTrashCan } from 'react-icons/fa6'
 import { toast } from 'react-toastify'
+import '@/src/styles/globals.css';
 
 import { handleDelete } from '@/src/actions/actions'
 import { Event } from '@/src/types/types'
+import { withRouter } from 'next/router'
 
 type EventComponentProps = {
   event: Event
@@ -39,18 +41,39 @@ function EventComponent({ event }: EventComponentProps) {
   }
 
   return (
-    <>
+    <div className= "relative">
       <span className="flex justify-between h-6">
         {`${event.title} -${event.userName}`}
         {session?.user?.id === event.userId && (
+          <div className="flex">
           <Button
             isIconOnly
             variant="bordered"
             onPress={onOpen}
             className="border-none"
+            color="white"
+          >
+            <FaPlus size="0.7rem" className="mb-[1rem]" />
+          </Button>
+          <Button
+            isIconOnly
+            variant="bordered"
+            onPress={onOpen}
+            className="border-none"
+            color="white"
+          >
+            <FaMinus size="0.7rem" className="mb-[1rem]" />
+          </Button>
+          <Button
+            isIconOnly
+            variant="bordered"
+            onPress={onOpen}
+            className="border-none"
+            color="white"
           >
             <FaRegTrashCan size="0.75rem" className="mb-[1rem]" />
           </Button>
+        </div>
         )}
       </span>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -81,7 +104,7 @@ function EventComponent({ event }: EventComponentProps) {
           )}
         </ModalContent>
       </Modal>
-    </>
+    </div>
   )
 }
 
