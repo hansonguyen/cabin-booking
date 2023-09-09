@@ -1,5 +1,5 @@
 name: Deploy API to Lambda
-on: []
+on: workflow_dispatch
 jobs:
   deploy:
     name: deploy
