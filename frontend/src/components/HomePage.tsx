@@ -2,6 +2,7 @@
 import {Parallax, ParallaxLayer} from '@react-spring/parallax'
 import '@/src/styles/homePage.css';
 import Image from "next/image"
+import TextBlock  from './HomePageText'
 
 import background from '@/src/images/background.png'
 import mountain from '@/src/images/mountains.png'
@@ -28,37 +29,38 @@ import man from '@/src/images/man_on_mountain.png'
 function ParallaxApp() {
 
     return (
-        <div className = "App">
+        <div>
         
         <Parallax pages={2} style={{ top: '0', left: '0' }} className="animation">
-            <ParallaxLayer offset={0} speed={0.25}>
-                <Image className="animation_layer parallax" src = {background} quality = {100} fill sizes= "100vw" style = {{objectFit: 'cover'}} alt= "hanson"/>
+            <ParallaxLayer offset={0} speed={0.25} >
+                <Image className="animation_layer parallax" src = {background} quality = {100} fill sizes= "10vw" style = {{objectFit: 'cover'}} alt= "hanson"/>
             </ParallaxLayer>
             <ParallaxLayer offset={0} speed={0.3}>
-                <Image className="animation_layer parallax" src = {mountain} fill sizes= "100vw" style = {{objectFit: 'cover'}} alt= "hanson"/>    
+                <Image className="animation_layer parallax" src = {mountain} quality = {100}fill sizes= "10vw" style = {{objectFit: 'cover'}} alt= "hanson"/>    
             </ParallaxLayer>
-            <ParallaxLayer offset={0} speed={-0.1}>
-                <Image className="animation_layer parallax" src = {logo} fill sizes= "100vw" style = {{objectFit: 'cover'}} alt= "hanson"/>
+            {/* <ParallaxLayer offset={0} speed={-0.3}>
+                <Image className="animation_layer parallax" src = {logo} quality = {100}fill sizes= "10vw" style = {{objectFit: 'cover'}} alt= "hanson"/>
             </ParallaxLayer>
             <ParallaxLayer offset={0} speed={0.3}>
-                <Image className="animation_layer parallax" src = {j1} fill sizes= "100vw" style = {{objectFit: 'cover'}} alt= "hanson"/>
+                <Image className="animation_layer parallax" src = {j1}quality = {100} fill sizes= "10vw" style = {{objectFit: 'cover'}} alt= "hanson"/>
             </ParallaxLayer>
             <ParallaxLayer offset={0} speed={0.35}>
-                <Image className="animation_layer parallax" src = {j2} fill sizes= "100vw" style = {{objectFit: 'cover'}} alt= "hanson"/>
+                <Image className="animation_layer parallax" src = {j2} quality = {100}fill sizes= "10vw" style = {{objectFit: 'cover'}} alt= "hanson"/>
             </ParallaxLayer>
             <ParallaxLayer offset={0} speed={0.5}>
-                <Image className="animation_layer parallax" src = {j3} fill sizes= "100vw" style = {{objectFit: 'cover'}} alt= "hanson"/>
+                <Image className="animation_layer parallax" src = {j3} quality = {100}fill sizes= "10vw" style = {{objectFit: 'cover'}} alt= "hanson"/>
             </ParallaxLayer>
             <ParallaxLayer offset={0} speed={0.45}>
-                <Image className="animation_layer parallax" src = {j4} fill sizes= "100vw" style = {{objectFit: 'cover'}} alt= "hanson"/>
+                <Image className="animation_layer parallax" src = {j4} quality = {100}fill sizes= "10vw" style = {{objectFit: 'cover'}} alt= "hanson"/>
             </ParallaxLayer>
             <ParallaxLayer offset={0} speed={0.40}>
-                <Image className="animation_layer parallax" src = {man} fill sizes= "100vw" style = {{objectFit: 'cover'}} alt= "hanson"/>
+                <Image className="animation_layer parallax" src = {man} quality = {100}fill sizes= "10vw" style = {{objectFit: 'cover'}} alt= "hanson"/>
             </ParallaxLayer>
             <ParallaxLayer offset={0} speed={0.35}>
-                <Image className="animation_layer parallax" src = {j5} fill sizes= "100vw" style = {{objectFit: 'cover'}} alt= "hanson"/>
-            </ParallaxLayer>
-            <ParallaxLayer offset={1} speed={0.25}>
+                <Image className="animation_layer parallax" src = {j5} quality = {100}fill sizes= "10vw" style = {{objectFit: 'cover'}} alt= "hanson"/>
+            </ParallaxLayer> */}
+            <ParallaxLayer offset={1} speed={0.5}>
+                <TextBlock/>
             </ParallaxLayer>
       </Parallax>
     </div>

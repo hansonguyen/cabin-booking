@@ -64,7 +64,7 @@ function NewEvent({ events }: NewEventProps) {
       >
         <div className="flex justify-center align-center gap-4 mt-4">
           <div className="flex flex-col">
-            <label htmlFor="title">Title</label>
+            <label htmlFor="title">Title of Trip</label>
             <Input required type="text" name="title" />
           </div>
           <div className="flex flex-col">
@@ -74,6 +74,10 @@ function NewEvent({ events }: NewEventProps) {
           <div className="flex flex-col">
             <label htmlFor="end">End</label>
             <Input required type="date" name="end" />
+          </div>
+          <div className="flex flex-col">
+            <label htmlFor="everyone">Everyone?</label>
+            <input type="checkbox" id="everyone" name="everyone"/>
           </div>
         </div>
         <NewEventButton />

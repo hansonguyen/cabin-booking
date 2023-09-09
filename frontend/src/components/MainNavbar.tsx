@@ -32,7 +32,7 @@ function MainNavbar() {
     <Navbar maxWidth="full" isBordered className="bg-slate-100 p-4">
       <NavbarBrand>
         <Link href="/" className="font-bold text-3xl">
-          SMITH CABIN
+          LM CABIN
         </Link>
       </NavbarBrand>
 
