@@ -6,6 +6,7 @@ import format from 'date-fns/format'
 import getDay from 'date-fns/getDay'
 import parse from 'date-fns/parse'
 import startOfWeek from 'date-fns/startOfWeek'
+import enUS from 'date-fns/locale/en-US'
 import React from 'react'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 
@@ -14,7 +15,7 @@ import { Event } from '@/src/types/types'
 import EventComponent from './EventComponent'
 
 const locales = {
-  'en-US': require('date-fns/locale/en-US')
+  'en-US': enUS
 }
 
 const localizer = dateFnsLocalizer({

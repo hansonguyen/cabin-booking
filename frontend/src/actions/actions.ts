@@ -70,7 +70,7 @@ export const validateNewEvent = async (
   formData: FormData
 ): Promise<Event | { error: string }> => {
   const session = await getServerSession(authOptions)
-
+  
   const newEvent = {
     title: formData.get('title')?.valueOf(),
     userName: session?.user?.name,

@@ -9,21 +9,21 @@ export const EventSchema = z
     start: z
       .string()
       .min(1, { message: 'Start date is required.' })
-      .pipe(
-        z.coerce.date({
-          required_error: 'Must input a start date.',
-          invalid_type_error: 'Invalid start date.'
-        })
-      ),
+      .transform((value) => {
+        // Convert the string to a Date object
+        const start = new Date(value)
+        start.setUTCHours(start.getTimezoneOffset() / 60, 0, 0, 0)
+        return start
+      }),
     end: z
       .string()
       .min(1, { message: 'End date is required.' })
-      .pipe(
-        z.coerce.date({
-          required_error: 'Must input an end date.',
-          invalid_type_error: 'Invalid end date.'
-        })
-      ),
+      .transform((value) => {
+        // Convert the string to a Date object
+        const end = new Date(value)
+        end.setUTCHours(end.getTimezoneOffset() / 60, 0, 0, 1)
+        return end
+      }),
     allDay: z.boolean()
   })
   .refine((data) => data.start <= data.end, {
