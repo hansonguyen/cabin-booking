@@ -77,7 +77,7 @@ function NewEvent({ events }: NewEventProps) {
           </div>
           <div className="flex flex-col">
             <label htmlFor="everyone">Everyone?</label>
-            <input type="checkbox" id="everyone" name="everyone"/>
+            <input type="checkbox" id="everyone" name="everyone" />
           </div>
         </div>
         <NewEventButton />
