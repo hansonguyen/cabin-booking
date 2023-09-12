@@ -11,5 +11,5 @@ func HandleRequest(request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2H
 }
 
 func main() {
-    lambda.Start(HandleRequest)
+	lambda.Start(HandleRequest)
 }
