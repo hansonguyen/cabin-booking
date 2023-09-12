@@ -7,8 +7,9 @@ import { createEvent, validateNewEvent } from '@/src/actions/actions'
 import NewEventButton from '@/src/components/NewEventButton'
 import { Event } from '@/src/types/types'
 import { isEvent } from '@/src/utils/utils'
-
+import {Checkbox} from "@nextui-org/react";
 import MainCalendar from './MainCalendar'
+import {HeartIcon} from './HeartIcon.jsx';  
 
 type NewEventProps = {
   events: Event[]
@@ -77,7 +78,9 @@ function NewEvent({ events }: NewEventProps) {
           </div>
           <div className="flex flex-col">
             <label htmlFor="everyone">Everyone?</label>
-            <input type="checkbox" id="everyone" name="everyone"/>
+            <div className='flex flex-col items-center justify-center' >
+              <Checkbox style={{ marginTop: '0.05px' }} defaultSelected color="success"></Checkbox>
+            </div>
           </div>
         </div>
         <NewEventButton />
