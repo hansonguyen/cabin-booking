@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -22,110 +21,129 @@ var client, err = mongo.Connect(context.Background(), options.Client().ApplyURI(
 
 // Exported handler function that runs function based on HTTP method
 func RunHandler(request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
+	if err != nil {
+		log.Println("Error connecting to MongoDB", err)
+		return events.APIGatewayV2HTTPResponse{Body: "Error connecting to database.", StatusCode: http.StatusInternalServerError}, err
+	}
 	switch request.RequestContext.HTTP.Method {
-	case "GET": return getBookings(request)
-	case "POST": return createBooking(request)
-	case "DELETE": return deleteBooking(request)
-	default: return events.APIGatewayV2HTTPResponse{}, errors.New("invalid request")
+	case "GET":
+		return getBookings(request)
+	case "POST":
+		return createBooking(request)
+	case "DELETE":
+		return deleteBooking(request)
+	case "PUT":
+		return updateBooking(request)
+	default:
+		return events.APIGatewayV2HTTPResponse{}, errors.New("invalid request")
 	}
 }
 
-// GET one or all bookings
+// ------------------------------ GET HANDLER ------------------------------
 func getBookings(request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
-	if err != nil {
-		log.Println("Error connecting to MongoDB", err)
-		return events.APIGatewayV2HTTPResponse{}, err
-	}
-	
-	collection := client.Database("SmithCabinDB").Collection("bookings")
-
 	if rawId, found := request.PathParameters["id"]; found {
-		stringId, err := url.QueryUnescape(rawId)
-
-		if err != nil {
-			log.Println("Invalid ID", err)
-			return events.APIGatewayV2HTTPResponse{}, err
-		}
-
-		id, err := primitive.ObjectIDFromHex(stringId)
-		
-		if err != nil{
-			log.Println("Invalid ID", err)
-			return events.APIGatewayV2HTTPResponse{}, err
-		}
-
-		var bookingBSON bson.D
-		err = collection.FindOne(context.Background(), bson.D{{"_id", id}}).Decode(&bookingBSON)
-
-		if err != nil {
-			log.Printf("Document not found with id (%s): %s\n", id, err)
-			return events.APIGatewayV2HTTPResponse{}, err
-		}
-
-		bbytes, err := bson.Marshal(bookingBSON)
-
-		if err != nil {
-			log.Println("Unable to marshal BSON object", err)
-			return events.APIGatewayV2HTTPResponse{}, err
-		}
-
-		var booking utils.Booking
-		err = bson.Unmarshal(bbytes, &booking)
-
-		if err != nil {
-			log.Println("Unable to unmarshal BSON object", err)
-			return events.APIGatewayV2HTTPResponse{}, err
-		}
-		jbytes, err := json.Marshal(booking)
-
-		if err != nil {
-			log.Println("Unable to marshal Booking object", err)
-			return events.APIGatewayV2HTTPResponse{}, err
-		}
-		log.Printf("Finished GET /booking/%s\n", id)
-		return events.APIGatewayV2HTTPResponse{Body: string(jbytes), StatusCode: http.StatusOK}, nil
+		return getOneBooking(rawId)
 	}
+
+	return getAllBookings()
+}
+
+// ------------------------------ GET ALL BOOKINGS ------------------------------
+func getAllBookings() (events.APIGatewayV2HTTPResponse, error) {
+	collection := client.Database("SmithCabinDB").Collection("bookings")
 
 	cursor, err := collection.Find(context.Background(), bson.M{})
 
 	if err != nil {
-		log.Println("Could not retrieve documents from database", err)
-		return events.APIGatewayV2HTTPResponse{}, err
+		body := "Could not retrieve bookings from database."
+		log.Println(body, err)
+		return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusInternalServerError}, err
 	}
 
 	var bookings []utils.Booking
 
 	if err = cursor.All(context.Background(), &bookings); err != nil {
-		log.Println("Could not retrieve documents from database", err)
-		return events.APIGatewayV2HTTPResponse{}, err
+		body := "Could not retrieve bookings from database."
+		log.Println(body, err)
+		return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusInternalServerError}, err
 	}
 
 	jbytes, err := json.Marshal(bookings)
 
 	if err != nil {
-		log.Println("Unable to marshal Bookings object", err)
-		return events.APIGatewayV2HTTPResponse{}, err
+		body := "Failed to read booking data."
+		log.Println(body, err)
+		return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusInternalServerError}, err
 	}
 
 	log.Println("Finished GET /booking")
 	return events.APIGatewayV2HTTPResponse{Body: string(jbytes), StatusCode: http.StatusOK}, nil
 }
 
-// POST new booking
-func createBooking(request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
+// ------------------------------ GET ONE BOOKING ------------------------------
+func getOneBooking(rawId string) (events.APIGatewayV2HTTPResponse, error) {
+	collection := client.Database("SmithCabinDB").Collection("bookings")
+	stringId, err := url.QueryUnescape(rawId)
+
 	if err != nil {
-		log.Println("Error connecting to MongoDB", err)
-		return events.APIGatewayV2HTTPResponse{}, err
+		body := "Invalid ID."
+		log.Println(body, err)
+		return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusBadRequest}, err
 	}
 
+	id, err := primitive.ObjectIDFromHex(stringId)
+
+	if err != nil {
+		body := "Invalid ID."
+		log.Println(body, err)
+		return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusBadRequest}, err
+	}
+
+	var bookingBSON bson.D
+	err = collection.FindOne(context.Background(), bson.D{{Key: "_id", Value: id}}).Decode(&bookingBSON)
+
+	if err != nil {
+		body := "Booking not found."
+		log.Println(body)
+		return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusNotFound}, err
+	}
+
+	bbytes, err := bson.Marshal(bookingBSON)
+
+	if err != nil {
+		body := "Failed to read booking data."
+		log.Println(body)
+		return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusInternalServerError}, err
+	}
+
+	var booking utils.Booking
+	err = bson.Unmarshal(bbytes, &booking)
+
+	if err != nil {
+		body := "Failed to read booking data."
+		log.Println(body)
+		return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusInternalServerError}, err
+	}
+	jbytes, err := json.Marshal(booking)
+
+	if err != nil {
+		body := "Failed to read booking data."
+		log.Println(body)
+		return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusInternalServerError}, err
+	}
+	log.Printf("Finished GET /booking/%s\n", id)
+	return events.APIGatewayV2HTTPResponse{Body: string(jbytes), StatusCode: http.StatusOK}, nil
+}
+
+// ------------------------------ POST BOOKING ------------------------------
+func createBooking(request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
 	// Validates json and returns error if not working
-	ApiResponse := events.APIGatewayV2HTTPResponse{}
 	var booking utils.Booking
 	err := json.Unmarshal([]byte(request.Body), &booking)
 
 	if err != nil {
-		body := "Error: Invalid JSON payload ||| " + fmt.Sprint(err) + " Body Obtained" + "||||" + request.Body
-		log.Println("Unable to unmarshal JSON payload")
+		body := "Invalid body for booking."
+		log.Println(booking)
 		return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusBadRequest}, err
 	}
 
@@ -133,77 +151,146 @@ func createBooking(request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2H
 	result, err := collection.InsertOne(context.TODO(), booking)
 
 	if err != nil {
-		log.Println("Could not insert booking into database")
-		return events.APIGatewayV2HTTPResponse{}, err
+		body := "Failed to add booking."
+		log.Println(body)
+		return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusInternalServerError}, err
 	}
 
 	jbytes, err := json.Marshal(result)
 
 	if err != nil {
-		log.Println("Unable to marshal document")
-		return events.APIGatewayV2HTTPResponse{}, err
+		body := "Failed to read booking data."
+		log.Println(body)
+		return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusInternalServerError}, err
 	}
 
-	ApiResponse = events.APIGatewayV2HTTPResponse{Body: string(jbytes), StatusCode: http.StatusCreated}
 	log.Println("Finished POST /booking")
-	return ApiResponse, nil
+	return events.APIGatewayV2HTTPResponse{Body: string(jbytes), StatusCode: http.StatusCreated}, nil
 }
 
-// DELETE booking
+// ------------------------------ DELETE BOOKING ------------------------------
 func deleteBooking(request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
-	if err != nil {
-		log.Println("Error connecting to MongoDB", err)
-		return events.APIGatewayV2HTTPResponse{}, err
-	}
-	
 	collection := client.Database("SmithCabinDB").Collection("bookings")
 
 	if rawId, found := request.PathParameters["id"]; found {
 		stringId, err := url.QueryUnescape(rawId)
 
 		if err != nil {
-			log.Println("Invalid ID", err)
-			return events.APIGatewayV2HTTPResponse{}, err
+			body := "Invalid ID."
+			log.Println(body, err)
+			return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusBadRequest}, err
 		}
 
 		id, err := primitive.ObjectIDFromHex(stringId)
-		
-		if err != nil{
-			log.Println("Invalid ID", err)
-			return events.APIGatewayV2HTTPResponse{}, err
+
+		if err != nil {
+			body := "Invalid ID."
+			log.Println(body, err)
+			return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusBadRequest}, err
 		}
 
 		var bookingBSON bson.D
-		err = collection.FindOneAndDelete(context.Background(), bson.D{{"_id", id}}).Decode(&bookingBSON)
+		err = collection.FindOneAndDelete(context.Background(), bson.D{{Key: "_id", Value: id}}).Decode(&bookingBSON)
 
 		if err != nil {
-			log.Printf("Document not found with id (%s): %s\n", id, err)
-			return events.APIGatewayV2HTTPResponse{}, err
+			body := "Booking not found."
+			log.Println(body)
+			return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusNotFound}, err
 		}
 
 		bbytes, err := bson.Marshal(bookingBSON)
 
 		if err != nil {
-			log.Println("Unable to marshal BSON object", err)
-			return events.APIGatewayV2HTTPResponse{}, err
+			body := "Failed to read booking data."
+			log.Println(body)
+			return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusInternalServerError}, err
 		}
 
 		var booking utils.Booking
 		err = bson.Unmarshal(bbytes, &booking)
 
 		if err != nil {
-			log.Println("Unable to unmarshal BSON object", err)
-			return events.APIGatewayV2HTTPResponse{}, err
+			body := "Failed to read booking data."
+			log.Println(body)
+			return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusInternalServerError}, err
 		}
 		jbytes, err := json.Marshal(booking)
 
 		if err != nil {
-			log.Println("Unable to marshal Booking object", err)
-			return events.APIGatewayV2HTTPResponse{}, err
+			body := "Failed to read booking data."
+			log.Println(body)
+			return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusInternalServerError}, err
 		}
 		log.Printf("Finished DELETE /booking/%s\n", id)
 		return events.APIGatewayV2HTTPResponse{Body: string(jbytes), StatusCode: http.StatusOK}, nil
 	}
-	log.Println("No ID provided")
-	return events.APIGatewayV2HTTPResponse{}, nil
+	body := "No ID provided."
+	log.Println(body)
+	return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusBadRequest}, err
+}
+
+// ------------------------------ PUT NEW BOOKING ------------------------------
+func updateBooking(request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
+	collection := client.Database("SmithCabinDB").Collection("bookings")
+	if rawId, found := request.PathParameters["id"]; found {
+		stringId, err := url.QueryUnescape(rawId)
+
+		if err != nil {
+			body := "Invalid ID."
+			log.Println(body, err)
+			return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusBadRequest}, err
+		}
+
+		id, err := primitive.ObjectIDFromHex(stringId)
+
+		if err != nil {
+			body := "Invalid ID."
+			log.Println(body, err)
+			return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusBadRequest}, err
+		}
+
+		var booking utils.Booking
+		err = json.Unmarshal([]byte(request.Body), &booking)
+
+		if err != nil {
+			body := "Invalid body for booking."
+			log.Println(booking)
+			return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusBadRequest}, err
+		}
+
+		filter := bson.M{"_id": id}
+		update := bson.D{
+			{Key: "$set", Value: bson.D{
+				{Key: "userName", Value: booking.UserName},
+				{Key: "userId", Value: booking.UserId},
+				{Key: "title", Value: booking.Title},
+				{Key: "start", Value: booking.Start},
+				{Key: "end", Value: booking.End},
+				{Key: "allDay", Value: booking.AllDay},
+			}},
+		}
+
+		err = collection.FindOneAndUpdate(context.TODO(), filter, update, options.FindOneAndUpdate().SetReturnDocument(options.After)).Decode(&booking)
+
+		if err != nil {
+			body := "Booking not found."
+			log.Println(body)
+			return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusNotFound}, err
+		}
+
+		jbytes, err := json.Marshal(booking)
+
+		if err != nil {
+			body := "Failed to read booking data."
+			log.Println(body)
+			return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusInternalServerError}, err
+		}
+
+		log.Printf("Finished PUT /booking/%s\n", id)
+		return events.APIGatewayV2HTTPResponse{Body: string(jbytes), StatusCode: http.StatusCreated}, nil
+
+	}
+	body := "No ID provided."
+	log.Println(body)
+	return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusBadRequest}, err
 }
