@@ -4,15 +4,15 @@ import 'react-datepicker/dist/react-datepicker.css'
 
 import format from 'date-fns/format'
 import getDay from 'date-fns/getDay'
+import enUS from 'date-fns/locale/en-US'
 import parse from 'date-fns/parse'
 import startOfWeek from 'date-fns/startOfWeek'
-import enUS from 'date-fns/locale/en-US'
 import React from 'react'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 
 import { Event } from '@/src/types/types'
 
-import EventComponent from './EventComponent'
+import EventComponent from './event/EventComponent'
 
 const locales = {
   'en-US': enUS

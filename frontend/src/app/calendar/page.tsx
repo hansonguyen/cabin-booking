@@ -1,6 +1,6 @@
 import { getEvents } from '@/src/actions/actions'
 
-import NewEvent from './NewEvent'
+import NewEvent from './event/NewEvent'
 
 async function CalendarPage() {
   const events = await getEvents()

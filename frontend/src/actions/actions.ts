@@ -42,7 +42,7 @@ export const createEvent = async (newEvent: Event) => {
   })
 
   if (!response.ok) {
-    throw new Error('Failed to create event')
+    throw new Error('Failed to create event.')
   }
   // Refresh cache
   revalidateTag('events')
@@ -53,25 +53,46 @@ export const createEvent = async (newEvent: Event) => {
  * @param event
  */
 export const handleDelete = async (event: Event) => {
-  if (!event) throw new Error('No event selected')
+  if (!event) throw new Error('No event selected.')
 
   const response = await fetch(`${process.env.BASE_URL}/booking/${event._id}`, {
     method: 'DELETE'
   })
 
   if (!response.ok) {
-    throw new Error('Failed to delete event')
+    throw new Error('Failed to delete event.')
+  }
+  // Refresh cache
+  revalidateTag('events')
+}
+
+export const updateEvent = async (updatedEvent: Event) => {
+  if (!updatedEvent) throw new Error('No event selected.')
+  if (!updatedEvent._id) throw new Error('No event ID.')
+
+  const response = await fetch(
+    `${process.env.BASE_URL}/booking/${updatedEvent._id}`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(updatedEvent)
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error('Failed to update event.')
   }
   // Refresh cache
   revalidateTag('events')
 }
 
 export const validateNewEvent = async (
-  formData: FormData
+  formData: FormData,
+  id?: string
 ): Promise<Event | { error: string }> => {
   const session = await getServerSession(authOptions)
-  
+
   const newEvent = {
+    _id: id ? id : undefined,
     title: formData.get('title')?.valueOf(),
     userName: session?.user?.name,
     userId: session?.user?.id,
