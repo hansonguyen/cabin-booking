@@ -8,7 +8,7 @@ import NewEventButton from '@/src/components/NewEventButton'
 import { Event } from '@/src/types/types'
 import { isEvent } from '@/src/utils/utils'
 
-import MainCalendar from './MainCalendar'
+import MainCalendar from '../MainCalendar'
 
 type NewEventProps = {
   events: Event[]
@@ -16,6 +16,7 @@ type NewEventProps = {
 
 function NewEvent({ events }: NewEventProps) {
   const ref = useRef<HTMLFormElement>(null)
+  // Used to optimistically update events in calendar
   const [optimisticEvents, addOptimisticEvent] = useOptimistic(
     events,
     (state: Event[], newEvent: Event) => {
@@ -23,7 +24,12 @@ function NewEvent({ events }: NewEventProps) {
     }
   )
 
-  const handleSubmit = async (formData: FormData) => {
+  /**
+   * Attempt to create a new event
+   * @param formData 
+   * @returns 
+   */
+  const handleNewSubmit = async (formData: FormData) => {
     const result = await validateNewEvent(formData)
     if (!isEvent(result)) {
       const toastId = 'validate-error'
@@ -59,7 +65,7 @@ function NewEvent({ events }: NewEventProps) {
     <>
       <form
         ref={ref}
-        action={(formData) => handleSubmit(formData)}
+        action={(formData) => handleNewSubmit(formData)}
         className="text-center mt-4"
       >
         <div className="flex justify-center align-center gap-4 mt-4">
