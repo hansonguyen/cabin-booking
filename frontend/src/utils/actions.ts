@@ -116,12 +116,17 @@ export const validateNewEvent = async (
   return result.data
 }
 
-export const getComments = async (id: string) => {
+/**
+ * Get comments for a booking event
+ * @param bookingId 
+ * @returns 
+ */
+export const getComments = async (bookingId: string) => {
   const response = await fetch(
-    `${process.env.BASE_URL}/comment?bookingId=${id}`
+    `${process.env.BASE_URL}/comment?bookingId=${bookingId}`
   )
   const rawData = await response.json()
-  
+
   if (!rawData) {
     return []
   }
