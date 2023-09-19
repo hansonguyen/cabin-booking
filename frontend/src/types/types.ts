@@ -32,3 +32,29 @@ export const EventSchema = z
   })
 
 export type Event = z.infer<typeof EventSchema>
+
+export const CommentSchema = z.object({
+  _id: z.string().optional(),
+  userName: z.string().min(1, { message: 'User name is required.' }),
+  userId: z.string().min(1, { message: 'User ID is required.' }),
+  bookingId: z.string().min(1, { message: 'Booking ID is required.' }),
+  message: z.string().min(1, { message: 'Message is required.' }),
+  createdAt: z
+    .string()
+    .min(1, { message: 'Created at is required.' })
+    .transform((value) => {
+      // Convert the string to a Date object
+      const createdAt = new Date(value)
+      return createdAt
+    }),
+  updatedAt: z
+    .string()
+    .min(1, { message: 'Updated at date is required.' })
+    .transform((value) => {
+      // Convert the string to a Date object
+      const updatedAt = new Date(value)
+      return updatedAt
+    })
+})
+
+export type Comment = z.infer<typeof CommentSchema>

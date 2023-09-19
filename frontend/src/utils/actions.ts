@@ -2,8 +2,8 @@
 import { revalidateTag } from 'next/cache'
 import { getServerSession } from 'next-auth'
 
-import { Event, EventSchema } from '../types/types'
-import { authOptions } from '../utils/auth'
+import { Comment, Event, EventSchema } from '../types/types'
+import { authOptions } from './auth'
 
 /**
  * Get list of all events from API
@@ -114,4 +114,26 @@ export const validateNewEvent = async (
   }
 
   return result.data
+}
+
+export const getComments = async (id: string) => {
+  const response = await fetch(
+    `${process.env.BASE_URL}/comment?bookingId=${id}`
+  )
+  const rawData = await response.json()
+  
+  if (!rawData) {
+    return []
+  }
+
+  // Reformat data to proper format
+  const cleanedData: Comment[] = rawData.map((data: Comment) => {
+    return {
+      ...data,
+      createdAt: new Date(data.createdAt),
+      updatedAt: new Date(data.updatedAt)
+    }
+  })
+
+  return cleanedData
 }

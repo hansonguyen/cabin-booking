@@ -8,7 +8,7 @@ import {
 } from '@nextui-org/react'
 import { toast } from 'react-toastify'
 
-import { handleDelete } from '@/src/actions/actions'
+import { handleDelete } from '@/src/utils/actions'
 import { Event } from '@/src/types/types'
 
 type EditEventModalProps = {

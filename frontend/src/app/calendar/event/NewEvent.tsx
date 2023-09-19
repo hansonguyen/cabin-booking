@@ -3,7 +3,7 @@ import { Input } from '@nextui-org/react'
 import { experimental_useOptimistic as useOptimistic, useRef } from 'react'
 import { toast } from 'react-toastify'
 
-import { createEvent, validateNewEvent } from '@/src/actions/actions'
+import { createEvent, validateNewEvent } from '@/src/utils/actions'
 import NewEventButton from '@/src/components/NewEventButton'
 import { Event } from '@/src/types/types'
 import { isEvent } from '@/src/utils/utils'
