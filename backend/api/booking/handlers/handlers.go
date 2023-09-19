@@ -22,7 +22,7 @@ var client, err = mongo.Connect(context.Background(), options.Client().ApplyURI(
 // Exported handler function that runs function based on HTTP method
 func RunHandler(request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
 	if err != nil {
-		log.Println("Error connecting to MongoDB", err)
+		log.Println("Error connecting to MongoDB.", err)
 		return events.APIGatewayV2HTTPResponse{Body: "Error connecting to database.", StatusCode: http.StatusInternalServerError}, err
 	}
 	switch request.RequestContext.HTTP.Method {
@@ -35,7 +35,7 @@ func RunHandler(request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTP
 	case "PUT":
 		return updateBooking(request)
 	default:
-		return events.APIGatewayV2HTTPResponse{}, errors.New("invalid request")
+		return events.APIGatewayV2HTTPResponse{}, errors.New("invalid request.")
 	}
 }
 
