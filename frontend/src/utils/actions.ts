@@ -1,8 +1,8 @@
 'use server'
-import { revalidateTag } from 'next/cache'
 import { getServerSession } from 'next-auth'
+import { revalidateTag } from 'next/cache'
 
-import { Comment, Event, EventSchema } from '../types/types'
+import { Comment, CommentSchema, Event, EventSchema } from '../types/types'
 import { authOptions } from './auth'
 
 /**
@@ -52,7 +52,7 @@ export const createEvent = async (newEvent: Event) => {
  * Delete a single event with API
  * @param event
  */
-export const handleDelete = async (event: Event) => {
+export const deleteEvent = async (event: Event) => {
   if (!event) throw new Error('No event selected.')
 
   const response = await fetch(`${process.env.BASE_URL}/booking/${event._id}`, {
@@ -66,6 +66,10 @@ export const handleDelete = async (event: Event) => {
   revalidateTag('events')
 }
 
+/**
+ * Update a single event
+ * @param updatedEvent
+ */
 export const updateEvent = async (updatedEvent: Event) => {
   if (!updatedEvent) throw new Error('No event selected.')
   if (!updatedEvent._id) throw new Error('No event ID.')
@@ -85,6 +89,12 @@ export const updateEvent = async (updatedEvent: Event) => {
   revalidateTag('events')
 }
 
+/**
+ * Validate event, returns event object or error
+ * @param formData
+ * @param id
+ * @returns
+ */
 export const validateNewEvent = async (
   formData: FormData,
   id?: string
@@ -118,12 +128,15 @@ export const validateNewEvent = async (
 
 /**
  * Get comments for a booking event
- * @param bookingId 
- * @returns 
+ * @param bookingId
+ * @returns
  */
 export const getComments = async (bookingId: string) => {
   const response = await fetch(
-    `${process.env.BASE_URL}/comment?bookingId=${bookingId}`
+    `${process.env.BASE_URL}/comment?bookingId=${bookingId}`,
+    {
+      next: { revalidate: 0, tags: ['comments'] }
+    }
   )
   const rawData = await response.json()
 
@@ -133,12 +146,88 @@ export const getComments = async (bookingId: string) => {
 
   // Reformat data to proper format
   const cleanedData: Comment[] = rawData.map((data: Comment) => {
-    return {
-      ...data,
-      createdAt: new Date(data.createdAt),
-      updatedAt: new Date(data.updatedAt)
-    }
+    if (data.createdAt && data.updatedAt)
+      return {
+        ...data,
+        createdAt: new Date(data.createdAt),
+        updatedAt: new Date(data.updatedAt)
+      }
   })
 
   return cleanedData
+}
+
+/**
+ * Post new comment to DB
+ * @param comment
+ */
+export const createComment = async (comment: Comment) => {
+  const response = await fetch(`${process.env.BASE_URL}/comment`, {
+    method: 'POST',
+    body: JSON.stringify(comment)
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to create comment.')
+  }
+  // Refresh cache
+  revalidateTag('comments')
+}
+
+/**
+ * Delete a comment from DB
+ * @param comment
+ */
+export const deleteComment = async (comment: Comment) => {
+  if (!comment) throw new Error('No comment selected.')
+
+  const response = await fetch(
+    `${process.env.BASE_URL}/comment/${comment._id}`,
+    {
+      method: 'DELETE'
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error('Failed to delete comment.')
+  }
+  // Refresh cache
+  revalidateTag('comments')
+}
+
+/**
+ * Valiate comment body, returns new comment object or error
+ * @param formData
+ * @param bookingId
+ * @param id
+ * @returns
+ */
+export const validateNewComment = async (
+  formData: FormData,
+  bookingId: string,
+  id?: string
+): Promise<Comment | { error: string }> => {
+  const session = await getServerSession(authOptions)
+
+  const newComment = {
+    _id: id ? id : undefined,
+    userName: session?.user?.name,
+    userId: session?.user?.id,
+    bookingId: bookingId,
+    message: formData.get('message')?.valueOf()
+  }
+
+  const result = CommentSchema.safeParse(newComment)
+
+  if (!result.success) {
+    let errorMsg = ''
+    result.error.issues.forEach((issue) => {
+      errorMsg += issue.message + ' '
+    })
+    return {
+      error: errorMsg
+    }
+  }
+
+  return result.data
 }

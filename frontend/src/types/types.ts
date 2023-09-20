@@ -41,20 +41,18 @@ export const CommentSchema = z.object({
   message: z.string().min(1, { message: 'Message is required.' }),
   createdAt: z
     .string()
-    .min(1, { message: 'Created at is required.' })
     .transform((value) => {
-      // Convert the string to a Date object
+      // Convert the string to a Date
       const createdAt = new Date(value)
       return createdAt
-    }),
+    }).optional(),
   updatedAt: z
     .string()
-    .min(1, { message: 'Updated at date is required.' })
     .transform((value) => {
       // Convert the string to a Date object
       const updatedAt = new Date(value)
       return updatedAt
-    })
+    }).optional()
 })
 
 export type Comment = z.infer<typeof CommentSchema>

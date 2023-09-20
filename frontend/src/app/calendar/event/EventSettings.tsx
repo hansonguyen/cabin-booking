@@ -8,7 +8,7 @@ import {
 import { FaRegEnvelope, FaRegTrashCan } from 'react-icons/fa6'
 import { FiEdit, FiSettings } from 'react-icons/fi'
 
-import DeleteEventModal from '@/src/components/modals/DeleteEventModal'
+import DeleteModal from '@/src/components/modals/DeleteModal'
 import EditEventModal from '@/src/components/modals/EditEventModal'
 import InviteEventModal from '@/src/components/modals/InviteEventModal'
 import useEventSettings from '@/src/hooks/useEventSettings'
@@ -75,8 +75,8 @@ function EventSettings({ event }: { event: Event }) {
         isInviteOpen={isInviteOpen}
         onInviteOpenChange={onInviteOpenChange}
       />
-      <DeleteEventModal
-        event={event}
+      <DeleteModal
+        item={event}
         isDeleteOpen={isDeleteOpen}
         onDeleteOpenChange={onDeleteOpenChange}
       />

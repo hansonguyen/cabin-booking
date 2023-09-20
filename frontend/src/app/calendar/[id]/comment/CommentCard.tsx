@@ -38,12 +38,12 @@ function CommentCard({ comment }: { comment: Comment }) {
       <CardFooter className="gap-3">
         <div className="flex gap-1">
           <p className=" text-default-400 text-small">
-            {createdAt.getTime() === updatedAt.getTime()
+            {createdAt?.getTime() === updatedAt?.getTime()
               ? 'Created At'
               : 'Last Updated'}
           </p>
           <p className="font-semibold text-default-400 text-small">
-            {updatedAt.toLocaleString()}
+            {updatedAt?.toLocaleString()}
           </p>
         </div>
       </CardFooter>

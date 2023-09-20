@@ -1,15 +1,23 @@
+import DeleteModal from '@/src/components/modals/DeleteModal'
 import { Comment } from '@/src/types/types'
 import {
   Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
-  DropdownTrigger
+  DropdownTrigger,
+  useDisclosure
 } from '@nextui-org/react'
 import { FaRegTrashCan } from 'react-icons/fa6'
 import { FiEdit, FiSettings } from 'react-icons/fi'
 
 function CommentSettings({ comment }: { comment: Comment }) {
+  const {
+    isOpen: isDeleteOpen,
+    onOpen: onDeleteOpen,
+    onOpenChange: onDeleteOpenChange
+  } = useDisclosure()
+
   return (
     <>
       <Dropdown>
@@ -31,12 +39,17 @@ function CommentSettings({ comment }: { comment: Comment }) {
             className="text-danger"
             color="danger"
             startContent={<FaRegTrashCan />}
-            onPress={() => console.log('delete pressed')}
+            onPress={onDeleteOpen}
           >
             Delete
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
+      <DeleteModal
+        item={comment}
+        isDeleteOpen={isDeleteOpen}
+        onDeleteOpenChange={onDeleteOpenChange}
+      />
     </>
   )
 }

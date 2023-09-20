@@ -31,6 +31,7 @@ function NewEvent({ events }: NewEventProps) {
    */
   const handleNewSubmit = async (formData: FormData) => {
     const result = await validateNewEvent(formData)
+
     if (!isEvent(result)) {
       const toastId = 'validate-error'
       toast.error(result.error, {
@@ -46,6 +47,7 @@ function NewEvent({ events }: NewEventProps) {
       })
       return
     }
+
     ref.current?.reset()
     addOptimisticEvent(result)
     await createEvent(result)
