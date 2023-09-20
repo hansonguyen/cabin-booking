@@ -8,25 +8,26 @@ import {
 } from '@nextui-org/react'
 import { toast } from 'react-toastify'
 
-import { handleDelete } from '@/src/actions/actions'
-import { Event } from '@/src/types/types'
+import { Comment, Event } from '@/src/types/types'
+import { deleteComment, deleteEvent } from '@/src/utils/actions'
+import { isEvent } from '@/src/utils/utils'
 
-type EditEventModalProps = {
-  event: Event
+type DeleteModalProps = {
+  item: Event | Comment
   isDeleteOpen: boolean
   onDeleteOpenChange: () => void
 }
 
-function DeleteEventModal({
-  event,
+function DeleteModal({
+  item,
   isDeleteOpen,
   onDeleteOpenChange
-}: EditEventModalProps) {
-
+}: DeleteModalProps) {
   const handleDeletePress = async (onClose: () => void) => {
-    await handleDelete(event)
+    if (isEvent(item)) await deleteEvent(item)
+    else await deleteComment(item)
     onClose()
-    toast(`${event.title} was deleted.`, {
+    toast(`${isEvent(item) ? item.title : 'Comment'} was deleted.`, {
       position: 'top-center',
       autoClose: 2500,
       hideProgressBar: false,
@@ -44,7 +45,7 @@ function DeleteEventModal({
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1">
-              Delete this event?
+              Delete this {isEvent(item) ? 'event' : 'comment'}?
             </ModalHeader>
             <ModalBody>
               <p>
@@ -53,7 +54,7 @@ function DeleteEventModal({
             </ModalBody>
             <ModalFooter>
               <Button color="danger" onPress={() => handleDeletePress(onClose)}>
-                Delete this event
+                Delete
               </Button>
               <Button color="default" variant="light" onPress={onClose}>
                 Cancel
@@ -66,4 +67,4 @@ function DeleteEventModal({
   )
 }
 
-export default DeleteEventModal
+export default DeleteModal

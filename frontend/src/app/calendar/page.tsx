@@ -1,4 +1,4 @@
-import { getEvents } from '@/src/actions/actions'
+import { getEvents } from '@/src/utils/actions'
 
 import NewEvent from './event/NewEvent'
 

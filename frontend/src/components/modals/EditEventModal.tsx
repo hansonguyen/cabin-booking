@@ -10,7 +10,7 @@ import {
 
 import { Event } from '@/src/types/types'
 import { isEvent } from '@/src/utils/utils'
-import { updateEvent, validateNewEvent } from '@/src/actions/actions'
+import { updateEvent, validateNewEvent } from '@/src/utils/actions'
 import { toast } from 'react-toastify'
 
 type EditEventModalProps = {

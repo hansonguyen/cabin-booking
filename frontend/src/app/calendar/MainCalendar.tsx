@@ -13,6 +13,7 @@ import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import { Event } from '@/src/types/types'
 
 import EventComponent from './event/EventComponent'
+import { useRouter } from 'next/navigation'
 
 const locales = {
   'en-US': enUS
@@ -31,6 +32,8 @@ type MainCalendarProps = {
 }
 
 const MainCalendar = ({ events }: MainCalendarProps) => {
+  const router = useRouter()
+
   return (
     <Calendar
       localizer={localizer}
@@ -42,6 +45,7 @@ const MainCalendar = ({ events }: MainCalendarProps) => {
         event: EventComponent
       }}
       views={['month', 'week']}
+      onSelectEvent={(event) => router.push(`calendar/${event._id}`)}
     />
   )
 }

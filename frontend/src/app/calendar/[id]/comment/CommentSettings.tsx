@@ -1,3 +1,7 @@
+import DeleteModal from '@/src/components/modals/DeleteModal'
+import EditCommentModal from '@/src/components/modals/EditCommentModal'
+import useCommentSettings from '@/src/hooks/useCommentSettings'
+import { Comment } from '@/src/types/types'
 import {
   Button,
   Dropdown,
@@ -5,37 +9,24 @@ import {
   DropdownMenu,
   DropdownTrigger
 } from '@nextui-org/react'
-import { FaRegEnvelope, FaRegTrashCan } from 'react-icons/fa6'
+import { FaRegTrashCan } from 'react-icons/fa6'
 import { FiEdit, FiSettings } from 'react-icons/fi'
 
-import DeleteModal from '@/src/components/modals/DeleteModal'
-import EditEventModal from '@/src/components/modals/EditEventModal'
-import InviteEventModal from '@/src/components/modals/InviteEventModal'
-import useEventSettings from '@/src/hooks/useEventSettings'
-import { Event } from '@/src/types/types'
-
-function EventSettings({ event }: { event: Event }) {
+function CommentSettings({ comment }: { comment: Comment }) {
   const {
     isEditOpen,
     onEditOpen,
     onEditOpenChange,
-    isInviteOpen,
-    onInviteOpen,
-    onInviteOpenChange,
     isDeleteOpen,
     onDeleteOpen,
     onDeleteOpenChange
-  } = useEventSettings()
+  } = useCommentSettings()
 
   return (
     <>
       <Dropdown>
         <DropdownTrigger>
-          <Button
-            isIconOnly
-            variant="bordered"
-            className="border-none text-white"
-          >
+          <Button isIconOnly variant="bordered" className="border-none">
             <FiSettings size="0.7rem" className="mb-[1rem]" />
           </Button>
         </DropdownTrigger>
@@ -46,14 +37,6 @@ function EventSettings({ event }: { event: Event }) {
             onPress={onEditOpen}
           >
             Edit
-          </DropdownItem>
-
-          <DropdownItem
-            key="copy"
-            startContent={<FaRegEnvelope />}
-            onPress={onInviteOpen}
-          >
-            Invite
           </DropdownItem>
           <DropdownItem
             key="delete"
@@ -66,17 +49,13 @@ function EventSettings({ event }: { event: Event }) {
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
-      <EditEventModal
-        event={event}
+      <EditCommentModal
+        comment={comment}
         isEditOpen={isEditOpen}
         onEditOpenChange={onEditOpenChange}
       />
-      <InviteEventModal
-        isInviteOpen={isInviteOpen}
-        onInviteOpenChange={onInviteOpenChange}
-      />
       <DeleteModal
-        item={event}
+        item={comment}
         isDeleteOpen={isDeleteOpen}
         onDeleteOpenChange={onDeleteOpenChange}
       />
@@ -84,4 +63,4 @@ function EventSettings({ event }: { event: Event }) {
   )
 }
 
-export default EventSettings
+export default CommentSettings
