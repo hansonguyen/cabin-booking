@@ -196,6 +196,29 @@ export const deleteComment = async (comment: Comment) => {
 }
 
 /**
+ * Update a single comment
+ * @param updatedComment
+ */
+export const updateComment = async (updatedComment: Comment) => {
+  if (!updatedComment) throw new Error('No comment selected.')
+  if (!updatedComment._id) throw new Error('No comment ID.')
+
+  const response = await fetch(
+    `${process.env.BASE_URL}/comment/${updatedComment._id}`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(updatedComment)
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error('Failed to update comment.')
+  }
+  // Refresh cache
+  revalidateTag('comments')
+}
+
+/**
  * Valiate comment body, returns new comment object or error
  * @param formData
  * @param bookingId
@@ -205,7 +228,8 @@ export const deleteComment = async (comment: Comment) => {
 export const validateNewComment = async (
   formData: FormData,
   bookingId: string,
-  id?: string
+  id?: string,
+  createdAt?: Date
 ): Promise<Comment | { error: string }> => {
   const session = await getServerSession(authOptions)
 
@@ -214,7 +238,8 @@ export const validateNewComment = async (
     userName: session?.user?.name,
     userId: session?.user?.id,
     bookingId: bookingId,
-    message: formData.get('message')?.valueOf()
+    message: formData.get('message')?.valueOf(),
+    createdAt: createdAt ? createdAt.toUTCString() : undefined
   }
 
   const result = CommentSchema.safeParse(newComment)

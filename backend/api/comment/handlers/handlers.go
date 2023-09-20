@@ -229,7 +229,7 @@ func updateComment(request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2H
 				{Key: "bookingId", Value: comment.BookingID},
 				{Key: "message", Value: comment.Message},
 				{Key: "createdAt", Value: comment.CreatedAt},
-				{Key: "updatedAt", Value: comment.UpdatedAt},
+				{Key: "updatedAt", Value: time.Now()},
 			}},
 		}
 

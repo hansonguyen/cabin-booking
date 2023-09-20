@@ -11,8 +11,8 @@ async function EventPage({ params: { id } }: { params: { id: string } }) {
       <h1>Comments for this event</h1>
       {comments.length > 0 ? (
         <div className="flex flex-col gap-4 p-4">
-          {comments.map((comment) => {
-            return <CommentCard comment={comment} />
+          {comments.map((comment, i) => {
+            return <CommentCard key={i} comment={comment} />
           })}
         </div>
       ) : (

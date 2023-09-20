@@ -1,22 +1,26 @@
 import DeleteModal from '@/src/components/modals/DeleteModal'
+import EditCommentModal from '@/src/components/modals/EditCommentModal'
+import useCommentSettings from '@/src/hooks/useCommentSettings'
 import { Comment } from '@/src/types/types'
 import {
   Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
-  DropdownTrigger,
-  useDisclosure
+  DropdownTrigger
 } from '@nextui-org/react'
 import { FaRegTrashCan } from 'react-icons/fa6'
 import { FiEdit, FiSettings } from 'react-icons/fi'
 
 function CommentSettings({ comment }: { comment: Comment }) {
   const {
-    isOpen: isDeleteOpen,
-    onOpen: onDeleteOpen,
-    onOpenChange: onDeleteOpenChange
-  } = useDisclosure()
+    isEditOpen,
+    onEditOpen,
+    onEditOpenChange,
+    isDeleteOpen,
+    onDeleteOpen,
+    onDeleteOpenChange
+  } = useCommentSettings()
 
   return (
     <>
@@ -30,7 +34,7 @@ function CommentSettings({ comment }: { comment: Comment }) {
           <DropdownItem
             key="copy"
             startContent={<FiEdit />}
-            onPress={() => console.log('edit pressed')}
+            onPress={onEditOpen}
           >
             Edit
           </DropdownItem>
@@ -45,6 +49,11 @@ function CommentSettings({ comment }: { comment: Comment }) {
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
+      <EditCommentModal
+        comment={comment}
+        isEditOpen={isEditOpen}
+        onEditOpenChange={onEditOpenChange}
+      />
       <DeleteModal
         item={comment}
         isDeleteOpen={isDeleteOpen}
