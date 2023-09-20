@@ -8,9 +8,11 @@ import {
   CardFooter,
   CardHeader
 } from '@nextui-org/react'
+import { useSession } from 'next-auth/react'
 import CommentSettings from './CommentSettings'
 
 function CommentCard({ comment }: { comment: Comment }) {
+  const { data: session } = useSession()
   const { userName, message, createdAt, updatedAt } = comment
 
   return (
@@ -30,7 +32,7 @@ function CommentCard({ comment }: { comment: Comment }) {
             </h4>
           </div>
         </div>
-        <CommentSettings comment={comment} />
+        {session && session.user.id === comment.userId && <CommentSettings comment={comment} />}
       </CardHeader>
       <CardBody className="px-3 py-0 text-small text-default-400">
         <p>{message}</p>
