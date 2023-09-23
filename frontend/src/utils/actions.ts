@@ -4,6 +4,7 @@ import { revalidateTag } from 'next/cache'
 
 import { Comment, CommentSchema, Event, EventSchema } from '../types/types'
 import { authOptions } from './auth'
+import { redis } from './redis'
 
 /**
  * Get list of all events from API
@@ -132,6 +133,22 @@ export const validateNewEvent = async (
  * @returns
  */
 export const getComments = async (bookingId: string) => {
+  // Check cache for comments first
+  const cachedComments = await redis.get(bookingId)
+
+  if (cachedComments) {
+    const rawData = JSON.parse(cachedComments)
+    const cleanedData: Comment[] = rawData.map((data: Comment) => {
+      if (data.createdAt && data.updatedAt)
+        return {
+          ...data,
+          createdAt: new Date(data.createdAt),
+          updatedAt: new Date(data.updatedAt)
+        }
+    })
+    return cleanedData
+  }
+
   const response = await fetch(
     `${process.env.BASE_URL}/comment?bookingId=${bookingId}`,
     {
@@ -141,6 +158,8 @@ export const getComments = async (bookingId: string) => {
   const rawData = await response.json()
 
   if (!rawData) {
+    // Set cache
+    await redis.set(bookingId, JSON.stringify([]))
     return []
   }
 
@@ -153,6 +172,10 @@ export const getComments = async (bookingId: string) => {
         updatedAt: new Date(data.updatedAt)
       }
   })
+
+  // Set cache
+  await redis.set(bookingId, JSON.stringify(cleanedData))
+  revalidateTag('comments')
 
   return cleanedData
 }
@@ -170,7 +193,8 @@ export const createComment = async (comment: Comment) => {
   if (!response.ok) {
     throw new Error('Failed to create comment.')
   }
-  // Refresh cache
+  // Revalidate cache
+  await redis.del(comment.bookingId)
   revalidateTag('comments')
 }
 
@@ -191,7 +215,8 @@ export const deleteComment = async (comment: Comment) => {
   if (!response.ok) {
     throw new Error('Failed to delete comment.')
   }
-  // Refresh cache
+  // Revalidate cache
+  await redis.del(comment.bookingId)
   revalidateTag('comments')
 }
 
@@ -214,7 +239,8 @@ export const updateComment = async (updatedComment: Comment) => {
   if (!response.ok) {
     throw new Error('Failed to update comment.')
   }
-  // Refresh cache
+  // Revalidate cache
+  await redis.del(updatedComment.bookingId)
   revalidateTag('comments')
 }
 
