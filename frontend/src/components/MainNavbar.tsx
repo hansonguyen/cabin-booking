@@ -29,7 +29,7 @@ function MainNavbar() {
   }
 
   return (
-    <Navbar maxWidth="full" isBordered className="bg-slate-100 p-4">
+    <Navbar maxWidth="full" isBordered className="bg-slate-100 p-4 z-50">
       <NavbarBrand>
         <Link href="/" className="font-bold text-3xl">
           LM CABIN
