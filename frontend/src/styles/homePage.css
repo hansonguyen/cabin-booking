@@ -1,6 +1,6 @@
-#textblock {
-  background-color: #210002;
-  height: 1000px;
+/* #textblock {
+  background-color: #210002; */
+  /* height: 1000px;
 }
 
 #textblock-container {
@@ -13,7 +13,6 @@
   color: #ffaf1b;
   font-size: 35px;
   font-weight: 600;
-  font-family: "Helvetica Neue";
 }
 
 #textblock-content {
@@ -40,60 +39,4 @@
   color: #ffaf1b;
   font-size: 15px;
   font-weight: 600;
-}
-  .animation, .animation_layer {
-    height: 1000px;
-}
-
-.animation {
-  display: block;
-    position: relative;
-    z-index: 10;
-}
-
-.animation_layer {
-    background-position: bottom center;
-    background-size: auto 1038px;
-    background-repeat: repeat-x;
-    width: 100%;
-    position: absolute;
-}
-.animation_layer.parallax {
-    position: fixed;
-}
-
-#artback {
-  background-image: '@/src/images/background.png'
-}
-
-#mountain {
-  background-image: '@/src/images/mountains.png'
-}
-
-#logoland {
-  background-image: '@/src/images/logo_land.png'
-}
-
-#jungle1 {
-  background-image: '@/src/images/jungle1.png'
-}
-
-#jungle2 {
-  background-image: '@/src/images/jungle2.png'
-}
-
-#jungle3 {
-  background-image: '@/src/images/jungle3.png'
-}
-
-#jungle4 {
-  background-image: '@/src/images/jungle4.png'
-}
-
-#jungle5 {
-  background-image: '@/src/images/jungle5.png'
-}
-
-#manonmountain {
-  background-image: '@/src/images/man_on_mountain.png'
-}
+} 
