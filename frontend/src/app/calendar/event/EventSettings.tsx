@@ -1,3 +1,4 @@
+'use client'
 import {
   Button,
   Dropdown,
@@ -31,12 +32,8 @@ function EventSettings({ event }: { event: Event }) {
     <>
       <Dropdown>
         <DropdownTrigger>
-          <Button
-            isIconOnly
-            variant="bordered"
-            className="border-none text-white"
-          >
-            <FiSettings size="0.7rem" className="mb-[1rem]" />
+          <Button isIconOnly variant='bordered' className="border-none">
+            <FiSettings size="1.25rem" />
           </Button>
         </DropdownTrigger>
         <DropdownMenu variant="faded" aria-label="Event settings">

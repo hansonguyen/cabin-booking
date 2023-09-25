@@ -3,9 +3,9 @@ import { Input } from '@nextui-org/react'
 import { experimental_useOptimistic as useOptimistic, useRef } from 'react'
 import { toast } from 'react-toastify'
 
-import { createEvent, validateNewEvent } from '@/src/utils/actions'
-import NewEventButton from '@/src/components/NewEventButton'
+import CreateButton from '@/src/components/CreateButton'
 import { Event } from '@/src/types/types'
+import { createEvent, validateNewEvent } from '@/src/utils/actions'
 import { isEvent } from '@/src/utils/utils'
 
 import MainCalendar from '../MainCalendar'
@@ -26,8 +26,8 @@ function NewEvent({ events }: NewEventProps) {
 
   /**
    * Attempt to create a new event
-   * @param formData 
-   * @returns 
+   * @param formData
+   * @returns
    */
   const handleNewSubmit = async (formData: FormData) => {
     const result = await validateNewEvent(formData)
@@ -76,6 +76,10 @@ function NewEvent({ events }: NewEventProps) {
             <Input required type="text" name="title" />
           </div>
           <div className="flex flex-col">
+            <label htmlFor="title">Description</label>
+            <Input required type="text" name="description" />
+          </div>
+          <div className="flex flex-col">
             <label htmlFor="start">Start</label>
             <Input required type="date" name="start" />
           </div>
@@ -88,7 +92,7 @@ function NewEvent({ events }: NewEventProps) {
             <input type="checkbox" id="everyone" name="everyone" />
           </div>
         </div>
-        <NewEventButton />
+        <CreateButton label="Create Event" />
       </form>
       <MainCalendar events={optimisticEvents} />
     </>

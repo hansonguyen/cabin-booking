@@ -1,5 +1,6 @@
 'use client'
 
+import CreateButton from '@/src/components/CreateButton'
 import { createComment, validateNewComment } from '@/src/utils/actions'
 import { isComment } from '@/src/utils/utils'
 import { Button, Textarea } from '@nextui-org/react'
@@ -54,13 +55,13 @@ function NewComment() {
   return (
     <form ref={ref} action={formData => handleAddComment(formData)}>
       <Textarea
-        label="Comment"
+        label="Leave a comment"
         labelPlacement="outside"
         placeholder="Enter your comment"
         name='message'
         className="max-w-xs"
       />
-      <Button type='submit'>Add Comment</Button>
+      <CreateButton label='Post Comment'/>
     </form>
   )
 }
