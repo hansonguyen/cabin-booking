@@ -9,14 +9,14 @@ export default function ProfileCard({ userEvents }: { userEvents: Event[] }) {
 
   return (
     <Card className="py-4 w-[80%] mx-auto mt-[5rem] h-[30rem] lg:w-[50%]">
-      <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+      <CardHeader className="py-2 px-4 flex-col items-start">
         <h1 className="font-bold text-3xl">{session?.user?.name}</h1>
         <small className="text-default-500">{session?.user?.email}</small>
       </CardHeader>
       <CardBody className="overflow-visible py-2">
         {userEvents.length > 0 ? (
           <div className='flex flex-col'>
-            <h6 className='font-semibold'>Events</h6>
+            <h6 className='font-semibold'>My Events</h6>
             {userEvents.map((event) => {
               return <Link href={`/calendar/${event._id}`}>{event.title}</Link>
             })}
