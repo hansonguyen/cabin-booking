@@ -33,6 +33,35 @@ export const getEvents = async (): Promise<Event[]> => {
 }
 
 /**
+ * Get list of events for a certain user
+ * @param id
+ * @returns
+ */
+export const getUserEvents = async (): Promise<Event[]> => {
+  const session = await getServerSession(authOptions)
+  if (!session || !session.user) return []
+  const response = await fetch(`${process.env.BASE_URL}/booking?userId=${session.user.id}`, {
+    next: { revalidate: 0, tags: [`user-events-${session.user.id}`] }
+  })
+  const rawData = await response.json()
+
+  if (!rawData) {
+    return []
+  }
+
+  // Reformat data to proper format
+  const cleanedData: Event[] = rawData.map((data: Event) => {
+    return {
+      ...data,
+      start: new Date(data.start),
+      end: new Date(data.end)
+    }
+  })
+
+  return cleanedData
+}
+
+/**
  * Get single event from API
  * @returns Array of events
  */
@@ -152,6 +181,7 @@ export const validateNewEvent = async (
   const newEvent = {
     _id: id ? id : undefined,
     title: formData.get('title')?.valueOf(),
+    description: formData.get('description')?.valueOf(),
     userName: session?.user?.name,
     userId: session?.user?.id,
     start: formData.get('start')?.valueOf(),

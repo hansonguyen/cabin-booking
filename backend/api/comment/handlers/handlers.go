@@ -55,12 +55,6 @@ func getCommentsByPost(request events.APIGatewayV2HTTPRequest) (events.APIGatewa
 			return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusBadRequest}, err
 		}
 
-		if err != nil {
-			body := "Invalid ID."
-			log.Println(body, err)
-			return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusBadRequest}, err
-		}
-
 		cursor, err := collection.Find(context.Background(), bson.D{{Key: "bookingId", Value: id}})
 
 		if err != nil {

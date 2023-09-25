@@ -1,5 +1,6 @@
 'use client'
 
+import CreateButton from '@/src/components/CreateButton'
 import { createComment, validateNewComment } from '@/src/utils/actions'
 import { isComment } from '@/src/utils/utils'
 import { Button, Textarea } from '@nextui-org/react'
@@ -60,7 +61,7 @@ function NewComment() {
         name='message'
         className="max-w-xs"
       />
-      <Button type='submit'>Post Comment</Button>
+      <CreateButton label='Post Comment'/>
     </form>
   )
 }

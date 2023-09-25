@@ -5,7 +5,8 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader
+  ModalHeader,
+  Textarea
 } from '@nextui-org/react'
 
 import { Event } from '@/src/types/types'
@@ -94,6 +95,15 @@ function EditEventModal({
                       required
                       type="text"
                       name="title"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label htmlFor="title">Description</label>
+                    <Textarea
+                      defaultValue={event.description}
+                      required
+                      type="text"
+                      name="description"
                     />
                   </div>
                   <div className="flex flex-col">
