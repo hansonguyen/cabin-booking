@@ -54,13 +54,13 @@ function NewComment() {
   return (
     <form ref={ref} action={formData => handleAddComment(formData)}>
       <Textarea
-        label="Comment"
+        label="Leave a comment"
         labelPlacement="outside"
         placeholder="Enter your comment"
         name='message'
         className="max-w-xs"
       />
-      <Button type='submit'>Add Comment</Button>
+      <Button type='submit'>Post Comment</Button>
     </form>
   )
 }

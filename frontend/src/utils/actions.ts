@@ -33,6 +33,49 @@ export const getEvents = async (): Promise<Event[]> => {
 }
 
 /**
+ * Get single event from API
+ * @returns Array of events
+ */
+export const getSingleEvent = async (id: string): Promise<Event> => {
+  // Check cache for event first
+  const cachedEvent = await redis.get(`events-${id}`)
+
+  if (cachedEvent) {
+    const rawData = JSON.parse(cachedEvent)
+
+    // Reformat data to proper format
+    const cleanedData: Event = {
+      ...rawData,
+      start: new Date(rawData.start),
+      end: new Date(rawData.end)
+    }
+
+    return cleanedData
+  }
+
+  const response = await fetch(`${process.env.BASE_URL}/booking/${id}`, {
+    next: { revalidate: 0, tags: [`events-${id}`] }
+  })
+  const rawData = await response.json()
+
+  if (!rawData) {
+    throw new Error('No event found.')
+  }
+
+  // Reformat data to proper format
+  const cleanedData: Event = {
+    ...rawData,
+    start: new Date(rawData.start),
+    end: new Date(rawData.end)
+  }
+
+  // Set cache
+  await redis.set(`events-${id}`, JSON.stringify(cleanedData))
+
+  return cleanedData
+}
+
+/**
  * Creates new event and posts to database through API
  * @param formData
  */
@@ -45,7 +88,9 @@ export const createEvent = async (newEvent: Event) => {
   if (!response.ok) {
     throw new Error('Failed to create event.')
   }
-  // Refresh cache
+
+  // Revalidate cache
+  await redis.set(`events-${newEvent._id}`, JSON.stringify(newEvent))
   revalidateTag('events')
 }
 
@@ -63,7 +108,7 @@ export const deleteEvent = async (event: Event) => {
   if (!response.ok) {
     throw new Error('Failed to delete event.')
   }
-  // Refresh cache
+  // Revalidate cache
   revalidateTag('events')
 }
 
@@ -86,8 +131,10 @@ export const updateEvent = async (updatedEvent: Event) => {
   if (!response.ok) {
     throw new Error('Failed to update event.')
   }
-  // Refresh cache
-  revalidateTag('events')
+
+  // Revalidate cache
+  await redis.del(`events-${updatedEvent._id}`)
+  revalidateTag(`events-${updatedEvent._id}`)
 }
 
 /**
@@ -134,7 +181,7 @@ export const validateNewEvent = async (
  */
 export const getComments = async (bookingId: string) => {
   // Check cache for comments first
-  const cachedComments = await redis.get(bookingId)
+  const cachedComments = await redis.get(`comments-${bookingId}`)
 
   if (cachedComments) {
     const rawData = JSON.parse(cachedComments)
@@ -152,14 +199,14 @@ export const getComments = async (bookingId: string) => {
   const response = await fetch(
     `${process.env.BASE_URL}/comment?bookingId=${bookingId}`,
     {
-      next: { revalidate: 0, tags: ['comments'] }
+      next: { revalidate: 0, tags: [`comments-${bookingId}`] }
     }
   )
   const rawData = await response.json()
 
   if (!rawData) {
     // Set cache
-    await redis.set(bookingId, JSON.stringify([]))
+    await redis.set(`comments-${bookingId}`, JSON.stringify([]))
     return []
   }
 
@@ -174,8 +221,8 @@ export const getComments = async (bookingId: string) => {
   })
 
   // Set cache
-  await redis.set(bookingId, JSON.stringify(cleanedData))
-  revalidateTag('comments')
+  await redis.set(`comments-${bookingId}`, JSON.stringify(cleanedData))
+  revalidateTag(`comments-${bookingId}`)
 
   return cleanedData
 }
@@ -194,8 +241,8 @@ export const createComment = async (comment: Comment) => {
     throw new Error('Failed to create comment.')
   }
   // Revalidate cache
-  await redis.del(comment.bookingId)
-  revalidateTag('comments')
+  await redis.del(`comments-${comment.bookingId}`)
+  revalidateTag(`comments-${comment.bookingId}`)
 }
 
 /**
@@ -216,8 +263,8 @@ export const deleteComment = async (comment: Comment) => {
     throw new Error('Failed to delete comment.')
   }
   // Revalidate cache
-  await redis.del(comment.bookingId)
-  revalidateTag('comments')
+  await redis.del(`comments-${comment.bookingId}`)
+  revalidateTag(`comments-${comment.bookingId}`)
 }
 
 /**
@@ -240,8 +287,8 @@ export const updateComment = async (updatedComment: Comment) => {
     throw new Error('Failed to update comment.')
   }
   // Revalidate cache
-  await redis.del(updatedComment.bookingId)
-  revalidateTag('comments')
+  await redis.del(`comments-${updatedComment.bookingId}`)
+  revalidateTag(`comments-${updatedComment.bookingId}`)
 }
 
 /**

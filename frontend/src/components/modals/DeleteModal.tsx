@@ -1,3 +1,5 @@
+'use client'
+
 import {
   Button,
   Modal,
@@ -11,6 +13,7 @@ import { toast } from 'react-toastify'
 import { Comment, Event } from '@/src/types/types'
 import { deleteComment, deleteEvent } from '@/src/utils/actions'
 import { isEvent } from '@/src/utils/utils'
+import { useRouter } from 'next/navigation'
 
 type DeleteModalProps = {
   item: Event | Comment
@@ -23,9 +26,15 @@ function DeleteModal({
   isDeleteOpen,
   onDeleteOpenChange
 }: DeleteModalProps) {
+  const router = useRouter()
+
   const handleDeletePress = async (onClose: () => void) => {
-    if (isEvent(item)) await deleteEvent(item)
-    else await deleteComment(item)
+    if (isEvent(item)) {
+      await deleteEvent(item)
+      router.push('/calendar')
+    } else {
+      await deleteComment(item)
+    }
     onClose()
     toast(`${isEvent(item) ? item.title : 'Comment'} was deleted.`, {
       position: 'top-center',
