@@ -12,10 +12,15 @@ type EventComponentProps = {
 }
 
 function EventComponent({ event }: EventComponentProps) {
+<<<<<<< Updated upstream
   const { data: session } = useSession()
 
+=======
+  let backgroundColor = '#b28dd7'
+  let borderColor = '#b28dd7' 
+>>>>>>> Stashed changes
   return (
-    <div className="relative">
+    <div className="relative" style={{ backgroundColor, borderColor }}>
       <span className="flex justify-between h-6">
         {`${event.title} -${event.userName}`}
         {session?.user?.id === event.userId && <EventSettings event={event} />}

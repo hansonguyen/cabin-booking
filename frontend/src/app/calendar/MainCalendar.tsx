@@ -2,6 +2,7 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'react-datepicker/dist/react-datepicker.css'
 
+// import 'react-big-calendar/lib/sass/styles'
 import format from 'date-fns/format'
 import getDay from 'date-fns/getDay'
 import enUS from 'date-fns/locale/en-US'
@@ -40,11 +41,11 @@ const MainCalendar = ({ events }: MainCalendarProps) => {
       events={events}
       startAccessor="start"
       endAccessor="end"
-      style={{ height: 500, margin: '4rem 8rem' }}
+      style={{ height: 1000, margin: '6rem 8rem' }}
       components={{
         event: EventComponent
       }}
-      views={['month', 'week']}
+      views={['month']}
       onSelectEvent={(event) => router.push(`calendar/${event._id}`)}
     />
   )
