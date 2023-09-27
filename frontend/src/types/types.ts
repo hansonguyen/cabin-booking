@@ -4,6 +4,7 @@ export const EventSchema = z
   .object({
     _id: z.string().optional(),
     title: z.string().min(1, { message: 'Title is required.' }),
+    description: z.string(),
     userName: z.string().min(1, { message: 'User name is required.' }),
     userId: z.string().min(1, { message: 'User ID is required.' }),
     start: z

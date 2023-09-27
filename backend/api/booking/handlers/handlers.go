@@ -44,7 +44,9 @@ func getBookings(request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTT
 	if rawId, found := request.PathParameters["id"]; found {
 		return getOneBooking(rawId)
 	}
-
+	if rawId := request.QueryStringParameters["userId"]; len(rawId) != 0 {
+		return getBookingsByUser(rawId)
+	}
 	return getAllBookings()
 }
 
@@ -53,6 +55,39 @@ func getAllBookings() (events.APIGatewayV2HTTPResponse, error) {
 	collection := client.Database("SmithCabinDB").Collection("bookings")
 
 	cursor, err := collection.Find(context.Background(), bson.M{})
+
+	if err != nil {
+		body := "Could not retrieve bookings from database."
+		log.Println(body, err)
+		return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusInternalServerError}, err
+	}
+
+	var bookings []utils.Booking
+
+	if err = cursor.All(context.Background(), &bookings); err != nil {
+		body := "Could not retrieve bookings from database."
+		log.Println(body, err)
+		return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusInternalServerError}, err
+	}
+
+	jbytes, err := json.Marshal(bookings)
+
+	if err != nil {
+		body := "Failed to read booking data."
+		log.Println(body, err)
+		return events.APIGatewayV2HTTPResponse{Body: body, StatusCode: http.StatusInternalServerError}, err
+	}
+
+	log.Println("Finished GET /booking")
+	return events.APIGatewayV2HTTPResponse{Body: string(jbytes), StatusCode: http.StatusOK}, nil
+}
+
+// ------------------------------ GET ALL BOOKINGS FOR A USER ------------------------------
+func getBookingsByUser(rawId string) (events.APIGatewayV2HTTPResponse, error) {
+	collection := client.Database("SmithCabinDB").Collection("bookings")
+	id, err := url.QueryUnescape(rawId)
+
+	cursor, err := collection.Find(context.Background(), bson.D{{Key: "userId", Value: id}})
 
 	if err != nil {
 		body := "Could not retrieve bookings from database."
@@ -264,6 +299,7 @@ func updateBooking(request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2H
 				{Key: "userName", Value: booking.UserName},
 				{Key: "userId", Value: booking.UserId},
 				{Key: "title", Value: booking.Title},
+				{Key: "description", Value: booking.Description},
 				{Key: "start", Value: booking.Start},
 				{Key: "end", Value: booking.End},
 				{Key: "allDay", Value: booking.AllDay},

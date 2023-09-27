@@ -5,12 +5,13 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader
+  ModalHeader,
+  Textarea
 } from '@nextui-org/react'
 
 import { Event } from '@/src/types/types'
-import { isEvent } from '@/src/utils/utils'
 import { updateEvent, validateNewEvent } from '@/src/utils/actions'
+import { isEvent } from '@/src/utils/utils'
 import { toast } from 'react-toastify'
 
 type EditEventModalProps = {
@@ -32,7 +33,9 @@ function EditEventModal({
   }${event.start.getUTCDate()}`
   const defaultEnd = `${event.end.getUTCFullYear()}-${
     event.end.getUTCMonth() + 1 < 10 ? '0' : ''
-  }${event.end.getUTCMonth() + 1}-${event.end.getUTCDate()}`
+  }${event.end.getUTCMonth() + 1}-${
+    event.end.getUTCDate() < 10 ? '0' : ''
+  }${event.end.getUTCDate()}`
 
   /**
    * Handle submit of edit event form
@@ -92,6 +95,15 @@ function EditEventModal({
                       required
                       type="text"
                       name="title"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label htmlFor="title">Description</label>
+                    <Textarea
+                      defaultValue={event.description}
+                      required
+                      type="text"
+                      name="description"
                     />
                   </div>
                   <div className="flex flex-col">
