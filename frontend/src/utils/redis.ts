@@ -1,3 +1,11 @@
+/**
+ * REDIS NOTES
+ * Cache syntax
+ * - Comments: "comments-{bookingID}"
+ * - Events: "events-{bookingID}"
+ * - Users: "users-{userId}"
+ */
+
 import { Redis } from 'ioredis'
 
 const getRedisURL = () => {

@@ -136,6 +136,7 @@ export const deleteEvent = async (event: Event) => {
     throw new Error('Failed to delete event.')
   }
   // Revalidate cache
+  await redis.del(`events-${event._id}`)
   revalidateTag('events')
 }
 
