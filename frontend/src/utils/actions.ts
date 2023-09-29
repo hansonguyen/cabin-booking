@@ -181,10 +181,12 @@ export const validateNewEvent = async (
     title: formData.get('title')?.valueOf(),
     description: formData.get('description')?.valueOf(),
     userName: session?.user?.name,
+    invited: [],
     userId: session?.user?.id,
     start: formData.get('start')?.valueOf(),
     end: formData.get('end')?.valueOf(),
-    allDay: true
+    allDay: true,
+    everyone:true
   }
 
   const result = EventSchema.safeParse(newEvent)
