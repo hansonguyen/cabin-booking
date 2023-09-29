@@ -12,10 +12,20 @@ export default function ProfileCard({
   user: UserType
   userEvents: Event[]
 }) {
+  // Initialize profile data
   const { data: session } = useSession()
-  const userId = user.Attributes[0].Value
-  const name = user.Attributes[1].Value
-  const email = user.Attributes[2].Value
+  let userId: string | undefined, name: string | undefined, email: string | undefined
+  if (user && user.Attributes && user.Attributes.length >= 3) {
+    userId = user.Attributes[0].Value
+    name = user.Attributes[1].Value
+    email = user.Attributes[2].Value
+  } else {
+    // Handle the case where user or user.Attributes is undefined or doesn't have enough items
+    throw new Error('No user values found.')
+  }
+  if (!userId || !name || !email) {
+    throw new Error('No user values found.')
+  }
 
   return (
     <Card className="py-4 w-[80%] mx-auto mt-[5rem] h-[30rem] lg:w-[50%]">
@@ -26,7 +36,9 @@ export default function ProfileCard({
       <CardBody className="overflow-visible py-2">
         {userEvents.length > 0 ? (
           <div className="flex flex-col">
-            <h6 className="font-semibold">{session?.user.id === userId ? 'My' : name + "'s"} Events</h6>
+            <h6 className="font-semibold">
+              {session?.user.id === userId ? 'My' : name + "'s"} Events
+            </h6>
             {userEvents.map((event) => {
               return <Link href={`/calendar/${event._id}`}>{event.title}</Link>
             })}
