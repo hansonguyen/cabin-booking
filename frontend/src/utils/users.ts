@@ -2,8 +2,10 @@
 import {
   CognitoIdentityProviderClient,
   CognitoIdentityProviderClientConfig,
-  ListUsersCommand
+  ListUsersCommand,
+  UserType
 } from '@aws-sdk/client-cognito-identity-provider'
+import { redis } from './redis'
 
 const config: CognitoIdentityProviderClientConfig = {
   region: 'us-west-2',
@@ -16,7 +18,7 @@ const client = new CognitoIdentityProviderClient(config)
 
 /**
  * Get all users from cognito user pool
- * @returns 
+ * @returns
  */
 export const getAllUsers = async () => {
   const params = {
@@ -35,10 +37,17 @@ export const getAllUsers = async () => {
 
 /**
  * Get a user based on id
- * @param id 
- * @returns 
+ * @param id
+ * @returns
  */
 export const getSingleUser = async (id: string) => {
+  // Check cache for event first
+  const cachedUser = await redis.get(`users-${id}`)
+
+  if (cachedUser) {
+    return JSON.parse(cachedUser) as UserType
+  }
+
   const params = {
     UserPoolId: process.env.COGNITO_USER_POOL_ID,
     AttributesToGet: ['name', 'email', 'sub'],
@@ -47,9 +56,12 @@ export const getSingleUser = async (id: string) => {
   const command = new ListUsersCommand(params)
 
   const response = await client.send(command)
-  if (!response.Users) {
+  if (!response.Users || response.Users.length === 0) {
     throw new Error('No user found.')
   }
-  
+
+  // Set cache
+  await redis.set(`users-${id}`, JSON.stringify(response.Users[0]))
+
   return response.Users[0]
 }
