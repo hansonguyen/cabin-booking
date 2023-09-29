@@ -20,7 +20,7 @@ function CommentCard({ comment }: { comment: Comment }) {
     <Card className="max-w-[340px]">
       <CardHeader className="justify-between">
         <div className="flex gap-5">
-          <Link href='/profile'>
+          <Link href={`/profile/${comment.userId}`}>
             <Avatar
               isBordered
               radius="full"
@@ -29,7 +29,7 @@ function CommentCard({ comment }: { comment: Comment }) {
             />
           </Link>
           <div className="flex flex-col gap-1 items-start justify-center">
-            <Link href='/profile' className="text-small font-semibold leading-none text-default-600">
+            <Link href={`/profile/${comment.userId}`} className="text-small font-semibold leading-none text-default-600">
               {userName}
             </Link>
           </div>
