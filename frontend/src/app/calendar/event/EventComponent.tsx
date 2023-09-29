@@ -7,7 +7,6 @@ type EventComponentProps = {
 }
 
 function EventComponent({ event }: EventComponentProps) {
-  const { data: session } = useSession()
 
   let backgroundColor = '#b28dd7'
   return (

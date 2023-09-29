@@ -37,11 +37,9 @@ export const getEvents = async (): Promise<Event[]> => {
  * @param id
  * @returns
  */
-export const getUserEvents = async (): Promise<Event[]> => {
-  const session = await getServerSession(authOptions)
-  if (!session || !session.user) return []
-  const response = await fetch(`${process.env.BASE_URL}/booking?userId=${session.user.id}`, {
-    next: { revalidate: 0, tags: [`user-events-${session.user.id}`] }
+export const getUserEvents = async (userId: string): Promise<Event[]> => {
+  const response = await fetch(`${process.env.BASE_URL}/booking?userId=${userId}`, {
+    next: { revalidate: 0, tags: [`user-events-${userId}`] }
   })
   const rawData = await response.json()
 

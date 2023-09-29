@@ -72,7 +72,7 @@ function MainNavbar() {
                 <DropdownItem
                   key="settings"
                   startContent={<BsFillPersonFill />}
-                  onClick={() => router.push('/profile')}
+                  onClick={() => router.push(`/profile/${session.user.id}`)}
                 >
                   My Profile
                 </DropdownItem>
