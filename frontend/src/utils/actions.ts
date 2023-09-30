@@ -187,7 +187,7 @@ export const validateNewEvent = async (
     start: formData.get('start')?.valueOf(),
     end: formData.get('end')?.valueOf(),
     allDay: true,
-    everyone:true
+    everyone: formData.get('everyone') === 'on' ? true : false
   }
 
   const result = EventSchema.safeParse(newEvent)

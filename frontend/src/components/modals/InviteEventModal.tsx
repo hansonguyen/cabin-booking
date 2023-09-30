@@ -8,6 +8,8 @@ import {
   ModalHeader
 } from '@nextui-org/react'
 import { FiSearch } from 'react-icons/fi'
+import { getAllUsers } from '@/src/utils/users'
+//  import { useEffect, useState } from 'react'
 
 type EditEventModalProps = {
   isInviteOpen: boolean
@@ -17,7 +19,13 @@ type EditEventModalProps = {
 function InviteEventModal({
   isInviteOpen,
   onInviteOpenChange
-}: EditEventModalProps) {
+}: EditEventModalProps) 
+
+
+{
+  // const user = await getAllUsers()
+
+
   return (
     <Modal isOpen={isInviteOpen} onOpenChange={onInviteOpenChange}>
       <ModalContent>

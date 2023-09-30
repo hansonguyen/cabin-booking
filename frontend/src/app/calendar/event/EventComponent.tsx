@@ -8,11 +8,13 @@ type EventComponentProps = {
 
 function EventComponent({ event }: EventComponentProps) {
 
-  let backgroundColor = '#b28dd7'
+  let backgroundColor = event.everyone ? '#880808' : '#5F8575'
+  let displayName = event.everyone ? 'Everyone!' : event.userName;
+
   return (
     <div className="relative" style={{ backgroundColor}}>
       <span className="flex justify-between h-6">
-        {`${event.title} -${event.userName}`}
+        {` ${event.title} - ${displayName}`}
       </span>
     </div>
   )

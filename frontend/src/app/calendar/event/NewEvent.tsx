@@ -89,8 +89,8 @@ function NewEvent({ events }: NewEventProps) {
             <Input required type="date" name="end" />
           </div>
           <div className="flex flex-col items-center">
-            <label htmlFor="everyone" className="pb-1" >Everyone?</label>
-            <Checkbox defaultSelected color="success"></Checkbox>
+              <input type="checkbox" id="everyone" name="everyone" />
+              <label htmlFor="everyone">Everyone?</label>
           </div>
         </div>
         <CreateButton label="Create Event" />
