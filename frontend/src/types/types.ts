@@ -6,6 +6,7 @@ export const EventSchema = z
     title: z.string().min(1, { message: 'Title is required.' }),
     description: z.string(),
     userName: z.string().min(1, { message: 'User name is required.' }),
+    invited: z.string().array(),
     userId: z.string().min(1, { message: 'User ID is required.' }),
     start: z
       .string()
@@ -25,7 +26,8 @@ export const EventSchema = z
         end.setUTCHours(end.getTimezoneOffset() / 60, 0, 0, 1)
         return end
       }),
-    allDay: z.boolean()
+    allDay: z.boolean(),
+    everyone: z.boolean()
   })
   .refine((data) => data.start <= data.end, {
     message: 'End date must be the same as or after the start date.',

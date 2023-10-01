@@ -9,6 +9,7 @@ async function EventPage({ params: { id } }: { params: { id: string } }) {
   const comments = await getComments(id)
   const event = await getSingleEvent(id)
   const session = await getServerSession(authOptions)
+  let displayName = event.everyone ? 'Everyone' : event.userName;
 
   return (
     <div className="p-4">
@@ -18,7 +19,7 @@ async function EventPage({ params: { id } }: { params: { id: string } }) {
             <EventSettings event={event} />
           )}
         </div>
-        <p className="text-xl font-semibold">Hosted by, {event.userName}</p>
+        <p className="text-xl font-semibold">Hosted by, {displayName}</p>
         <p className='my-8'>{event.description}</p>
         <NewComment/>
         {comments.length > 0 ? (

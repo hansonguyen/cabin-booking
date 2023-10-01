@@ -13,6 +13,9 @@ import { Event } from '@/src/types/types'
 import { updateEvent, validateNewEvent } from '@/src/utils/actions'
 import { isEvent } from '@/src/utils/utils'
 import { toast } from 'react-toastify'
+import { useState } from 'react'
+import React, { ChangeEvent } from 'react';
+
 
 type EditEventModalProps = {
   event: Event
@@ -36,6 +39,13 @@ function EditEventModal({
   }${event.end.getUTCMonth() + 1}-${
     event.end.getUTCDate() < 10 ? '0' : ''
   }${event.end.getUTCDate()}`
+
+  const [isEveryoneChecked, setIsEveryoneChecked] = useState(event.everyone)
+
+  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setIsEveryoneChecked(event.target.checked);
+  };
+
 
   /**
    * Handle submit of edit event form
@@ -125,9 +135,9 @@ function EditEventModal({
                     />
                   </div>
                   <div className="flex gap-1 ml-1">
-                    <input type="checkbox" id="everyone" name="everyone" />
-                    <label htmlFor="everyone">Everyone?</label>
-                  </div>
+                  <input type="checkbox" id="everyone" name="everyone" checked={isEveryoneChecked} onChange={handleCheckboxChange} />
+                  <label htmlFor="everyone">Everyone?</label>
+                </div>
                 </div>
               </ModalBody>
               <ModalFooter>
