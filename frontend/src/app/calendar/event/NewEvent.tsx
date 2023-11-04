@@ -8,6 +8,7 @@ import { Event } from '@/src/types/types'
 import { createEvent, validateNewEvent } from '@/src/utils/actions'
 import { isEvent } from '@/src/utils/utils'
 import {Checkbox} from "@nextui-org/react"
+import { useState } from 'react'
 
 import MainCalendar from '../MainCalendar'
 
@@ -30,8 +31,11 @@ function NewEvent({ events }: NewEventProps) {
    * @param formData
    * @returns
    */
+
+
+  const [checked, setChecked] = useState(false);
   const handleNewSubmit = async (formData: FormData) => {
-    const result = await validateNewEvent(formData)
+    const result = await validateNewEvent(formData, checked)
 
     if (!isEvent(result)) {
       const toastId = 'validate-error'
@@ -89,8 +93,8 @@ function NewEvent({ events }: NewEventProps) {
             <Input required type="date" name="end" />
           </div>
           <div className="flex flex-col items-center">
-              <input type="checkbox" id="everyone" name="everyone" />
-              <label htmlFor="everyone">Everyone?</label>
+          <label htmlFor="everyone">Everyone?</label>
+            <Checkbox isSelected={checked} name="everyone" onChange={(e) => setChecked(e.target.checked)} style = {{paddingTop: '1.5ch'}} />
           </div>
         </div>
         <CreateButton label="Create Event" />

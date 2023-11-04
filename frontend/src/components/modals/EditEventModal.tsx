@@ -6,15 +6,16 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Textarea
+  Textarea,
 } from '@nextui-org/react'
 
+import {Checkbox} from '@nextui-org/react'
 import { Event } from '@/src/types/types'
 import { updateEvent, validateNewEvent } from '@/src/utils/actions'
 import { isEvent } from '@/src/utils/utils'
 import { toast } from 'react-toastify'
-import { useState } from 'react'
-import React, { ChangeEvent } from 'react';
+import { useState, useEffect } from 'react'
+import React, { ChangeEvent } from 'react'
 
 
 type EditEventModalProps = {
@@ -40,11 +41,16 @@ function EditEventModal({
     event.end.getUTCDate() < 10 ? '0' : ''
   }${event.end.getUTCDate()}`
 
-  const [isEveryoneChecked, setIsEveryoneChecked] = useState(event.everyone)
+  const [checked, setChecked] = useState(event.everyone)
 
-  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setIsEveryoneChecked(event.target.checked);
+  useEffect(() => {
+    setChecked(event.everyone);
+  }, [event.everyone]);
+  
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(e.target.checked);
   };
+  
 
 
   /**
@@ -54,7 +60,7 @@ function EditEventModal({
    * @returns
    */
   const handleEditSubmit = async (formData: FormData, onClose: () => void) => {
-    const result = await validateNewEvent(formData, event._id)
+    const result = await validateNewEvent(formData, checked, event._id)
     if (!isEvent(result)) {
       const toastId = 'validate-error'
       toast.error(result.error, {
@@ -135,7 +141,7 @@ function EditEventModal({
                     />
                   </div>
                   <div className="flex gap-1 ml-1">
-                  <input type="checkbox" id="everyone" name="everyone" checked={isEveryoneChecked} onChange={handleCheckboxChange} />
+                  <Checkbox name="everyone" isSelected={checked} onChange={handleCheckboxChange} />
                   <label htmlFor="everyone">Everyone?</label>
                 </div>
                 </div>
