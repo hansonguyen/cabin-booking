@@ -172,8 +172,10 @@ export const updateEvent = async (updatedEvent: Event) => {
  * @returns
  */
 export const validateNewEvent = async (
-  formData: FormData,
+  formData: FormData, 
+  checked?: boolean,
   id?: string
+ 
 ): Promise<Event | { error: string }> => {
   const session = await getServerSession(authOptions)
 
@@ -187,7 +189,7 @@ export const validateNewEvent = async (
     start: formData.get('start')?.valueOf(),
     end: formData.get('end')?.valueOf(),
     allDay: true,
-    everyone: formData.get('everyone') === 'on' ? true : false
+    everyone: checked
   }
 
   const result = EventSchema.safeParse(newEvent)

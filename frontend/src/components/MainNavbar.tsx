@@ -29,7 +29,7 @@ function MainNavbar() {
   }
 
   return (
-    <Navbar maxWidth="full" isBordered className="bg-slate-100 p-4 z-50">
+    <Navbar maxWidth="full" isBordered className="bg-blue-50 p-4 z-50" >
       <NavbarBrand>
         <Link href="/" className="font-bold text-3xl">
           LM CABIN
@@ -39,7 +39,7 @@ function MainNavbar() {
       {session && (
         <NavbarContent justify="center">
           <NavbarItem>
-            <Link aria-current="page" className='font-semibold text-xl' href="/calendar">
+            <Link aria-current="page" className='font-semibold text-3xl' href="/calendar">
               Calendar
             </Link>
           </NavbarItem>

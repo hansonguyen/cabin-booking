@@ -28,7 +28,7 @@ export default function RootLayout({
 
   return (
     <html lang="en" className={poppins.className}>
-      <body className="h-[200vh] w-[99vw]">
+      <body className="w-full h-screen">
         <Providers>
           <MainNavbar />
           {children}
