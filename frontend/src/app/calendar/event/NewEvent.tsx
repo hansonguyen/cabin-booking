@@ -94,7 +94,7 @@ function NewEvent({ events }: NewEventProps) {
           </div>
           <div className="flex flex-col items-center">
           <label htmlFor="everyone">Everyone?</label>
-            <Checkbox isSelected={checked} name="everyone" onChange={(e) => setChecked(e.target.checked)} style = {{paddingTop: '17px'}} />
+            <Checkbox isSelected={checked} name="everyone" onChange={(e) => setChecked(e.target.checked)} style = {{paddingTop: '1.5ch'}} />
           </div>
         </div>
         <CreateButton label="Create Event" />
