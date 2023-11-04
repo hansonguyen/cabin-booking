@@ -297,12 +297,14 @@ func updateBooking(request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2H
 		update := bson.D{
 			{Key: "$set", Value: bson.D{
 				{Key: "userName", Value: booking.UserName},
+				{Key: "invited", Value: booking.Invited},
 				{Key: "userId", Value: booking.UserId},
 				{Key: "title", Value: booking.Title},
 				{Key: "description", Value: booking.Description},
 				{Key: "start", Value: booking.Start},
 				{Key: "end", Value: booking.End},
 				{Key: "allDay", Value: booking.AllDay},
+				{Key: "everyone", Value: booking.Everyone},
 			}},
 		}
 
