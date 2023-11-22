@@ -18,6 +18,7 @@ import { signOut, useSession } from 'next-auth/react'
 import React from 'react'
 import { BiHelpCircle, BiLogOut } from 'react-icons/bi'
 import { BsFillPersonFill, BsPersonCircle } from 'react-icons/bs'
+import '@/src/styles/homePage.css'
 
 function MainNavbar() {
   const router = useRouter()
@@ -31,15 +32,15 @@ function MainNavbar() {
   return (
     <Navbar maxWidth="full" isBordered className="bg-blue-50 p-4 z-50" >
       <NavbarBrand>
-        <Link href="/" className="font-bold text-3xl">
-          LM CABIN
+        <Link href="/" className=' Link font-bold text-3xl'>
+          Home
         </Link>
       </NavbarBrand>
 
       {session && (
         <NavbarContent justify="center">
           <NavbarItem>
-            <Link aria-current="page" className='font-semibold text-3xl' href="/calendar">
+            <Link aria-current="page" className=' Link font-semibold text-3xl' href="/calendar">
               Calendar
             </Link>
           </NavbarItem>
@@ -55,9 +56,9 @@ function MainNavbar() {
                 showFallback
                 as="button"
                 className="transition-transform"
-                color="secondary"
+                color="default"
                 name={session?.user?.name ? session.user.name : ''}
-                src="https://hansonn.com/assets/profile-pic.e5322a2a.jpg"
+                src= "https://cdn3.iconfinder.com/data/icons/basic-ui-element-s94-3/64/Basic_UI_Icon_Pack_-_Glyph_user-512.png"
                 fallback={<BsPersonCircle size="3rem" />}
               />
             </DropdownTrigger>
@@ -76,13 +77,13 @@ function MainNavbar() {
                 >
                   My Profile
                 </DropdownItem>
-                <DropdownItem
+                {/* <DropdownItem
                   key="help_and_feedback"
                   startContent={<BiHelpCircle />}
                   onClick={handleHelp}
                 >
                   Help & Feedback
-                </DropdownItem>
+                </DropdownItem> */}
               </DropdownSection>
               <DropdownItem
                 key="logout"

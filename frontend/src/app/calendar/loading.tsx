@@ -1,6 +1,6 @@
 function Loading() {
   return (
-    <p>Loading...</p>
+    <p>Calling Chat gpt...</p>
   )
 }
 

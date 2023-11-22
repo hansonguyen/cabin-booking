@@ -300,9 +300,11 @@ func updateBooking(request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2H
 				{Key: "userId", Value: booking.UserId},
 				{Key: "title", Value: booking.Title},
 				{Key: "description", Value: booking.Description},
+				{Key: "customName", Value: booking.CustomName},
 				{Key: "start", Value: booking.Start},
 				{Key: "end", Value: booking.End},
 				{Key: "allDay", Value: booking.AllDay},
+				{Key: "everyone", Value: booking.Everyone},
 			}},
 		}
 

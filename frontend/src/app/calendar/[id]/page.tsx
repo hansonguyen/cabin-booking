@@ -9,8 +9,13 @@ async function EventPage({ params: { id } }: { params: { id: string } }) {
   const comments = await getComments(id)
   const event = await getSingleEvent(id)
   const session = await getServerSession(authOptions)
-  let displayName = event.everyone ? 'Everyone' : event.userName;
-
+  let displayName = event.userName
+  if(event.customName){
+    displayName = event.customName;
+  }
+  if (event.everyone){
+    displayName =  'Everyone!'
+  }
   return (
     <div className="p-4">
         <div className="flex gap-4">

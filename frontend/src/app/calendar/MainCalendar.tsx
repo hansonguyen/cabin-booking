@@ -36,19 +36,23 @@ const MainCalendar = ({ events }: MainCalendarProps) => {
   const router = useRouter()
 
   return (
-    <Calendar
-      localizer={localizer}
-      events={events}
-      startAccessor="start"
-      endAccessor="end"
-      style={{ height: 1000, margin: '6rem 8rem' }}
-      components={{
-        event: EventComponent
-      }}
-      views={['month']}
-      onSelectEvent={(event) => router.push(`calendar/${event._id}`)}
-    />
+    <div>
+      <Calendar
+        className="my-calendar"
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 1000, margin: '6rem 8rem', paddingBottom: '2rem'}}
+        components={{
+          event: EventComponent
+        }}
+        views={['month']}
+        onSelectEvent={(event) => router.push(`calendar/${event._id}`)}
+      />
+    </div>
   )
 }
+
 
 export default MainCalendar

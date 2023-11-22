@@ -15,7 +15,7 @@ function ParallaxApp() {
     offset: ["start start", "end start"],
   });
 
-  const textY = useTransform(scrollYProgress, [0, 1], ["-30%", "400%"]);
+  const textY = useTransform(scrollYProgress, [0, 1], ["-30%", "300%"]);
   
 
   return (
@@ -24,8 +24,6 @@ function ParallaxApp() {
       LM Cabin
     </motion.h1>
     <Image src={m1} alt="Background Image"/>
-  
-
   </div>
 
   )

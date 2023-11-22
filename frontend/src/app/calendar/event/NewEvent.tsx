@@ -77,23 +77,27 @@ function NewEvent({ events }: NewEventProps) {
       >
         <div className="flex justify-center align-center gap-4 mt-4">
           <div className="flex flex-col">
-            <label htmlFor="title">Title of Trip</label>
+          <label htmlFor="title">Title of Trip <span style={{ color: 'red' }}>*</span></label>
             <Input required type="text" name="title" />
+          </div>          
+          <div className="flex flex-col">
+            <label htmlFor="start">Start <span style={{ color: 'red' }}>*</span></label>
+            <Input required type="date" name="start" />
           </div>
+          <div className="flex flex-col">
+            <label htmlFor="end">End <span style={{ color: 'red' }}>*</span></label>
+            <Input required type="date" name="end" />
+          </div> 
           <div className="flex flex-col">
             <label htmlFor="title">Description</label>
             <Input required type="text" name="description" />
           </div>
           <div className="flex flex-col">
-            <label htmlFor="start">Start</label>
-            <Input required type="date" name="start" />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="end">End</label>
-            <Input required type="date" name="end" />
+            <label htmlFor="title">Custom Name?</label>
+            <Input required type="text" name="customName" />
           </div>
           <div className="flex flex-col items-center">
-          <label htmlFor="everyone">Everyone?</label>
+          <label htmlFor="everyone">For Everyone?</label>
             <Checkbox isSelected={checked} name="everyone" onChange={(e) => setChecked(e.target.checked)} style = {{paddingTop: '1.5ch'}} />
           </div>
         </div>

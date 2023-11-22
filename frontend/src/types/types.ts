@@ -6,7 +6,7 @@ export const EventSchema = z
     title: z.string().min(1, { message: 'Title is required.' }),
     description: z.string(),
     userName: z.string().min(1, { message: 'User name is required.' }),
-    invited: z.string().array(),
+    customName: z.string(),
     userId: z.string().min(1, { message: 'User ID is required.' }),
     start: z
       .string()
@@ -35,6 +35,7 @@ export const EventSchema = z
   })
 
 export type Event = z.infer<typeof EventSchema>
+
 
 export const CommentSchema = z.object({
   _id: z.string().optional(),

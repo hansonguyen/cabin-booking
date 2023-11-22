@@ -47,6 +47,8 @@ function EditEventModal({
     setChecked(event.everyone);
   }, [event.everyone]);
   
+
+  
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(e.target.checked);
   };
@@ -105,7 +107,7 @@ function EditEventModal({
               <ModalBody>
                 <div className="flex flex-col justify-center align-center gap-6 mt-4">
                   <div className="flex flex-col">
-                    <label htmlFor="title">Title of Trip</label>
+                    <label htmlFor="title">Title of Trip *</label>
                     <Input
                       defaultValue={event.title}
                       required
@@ -114,7 +116,16 @@ function EditEventModal({
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label htmlFor="title">Description</label>
+                    <label htmlFor="customName">Custom Name</label>
+                    <Input
+                      defaultValue={event.customName}
+                      required
+                      type="text"
+                      name="customName"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label htmlFor="description">Description</label>
                     <Textarea
                       defaultValue={event.description}
                       required
@@ -142,7 +153,7 @@ function EditEventModal({
                   </div>
                   <div className="flex gap-1 ml-1">
                   <Checkbox name="everyone" isSelected={checked} onChange={handleCheckboxChange} />
-                  <label htmlFor="everyone">Everyone?</label>
+                  <label htmlFor="title">Everyone?</label>
                 </div>
                 </div>
               </ModalBody>
