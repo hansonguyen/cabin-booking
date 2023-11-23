@@ -184,7 +184,7 @@ export const validateNewEvent = async (
     title: formData.get('title')?.valueOf(),
     description: formData.get('description')?.valueOf(),
     userName: session?.user?.name,
-    invited: [],
+    customName: formData.get('customName')?.valueOf(),
     userId: session?.user?.id,
     start: formData.get('start')?.valueOf(),
     end: formData.get('end')?.valueOf(),

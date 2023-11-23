@@ -45,13 +45,13 @@ function EventSettings({ event }: { event: Event }) {
             Edit
           </DropdownItem>
 
-          <DropdownItem
+          {/* <DropdownItem
             key="copy"
             startContent={<FaRegEnvelope />}
             onPress={onInviteOpen}
           >
             Invite
-          </DropdownItem>
+          </DropdownItem> */}
           <DropdownItem
             key="delete"
             className="text-danger"

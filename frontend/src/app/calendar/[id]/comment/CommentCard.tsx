@@ -25,7 +25,7 @@ function CommentCard({ comment }: { comment: Comment }) {
               isBordered
               radius="full"
               size="md"
-              src="https://hansonn.com/assets/profile-pic.e5322a2a.jpg"
+              src="https://cdn3.iconfinder.com/data/icons/basic-ui-element-s94-3/64/Basic_UI_Icon_Pack_-_Glyph_user-512.png"
             />
           </Link>
           <div className="flex flex-col gap-1 items-start justify-center">
