@@ -1,6 +1,5 @@
 'use client'
 
-import { Comment } from '@/src/types/types'
 import {
   Avatar,
   Card,
@@ -8,8 +7,11 @@ import {
   CardFooter,
   CardHeader
 } from '@nextui-org/react'
-import { useSession } from 'next-auth/react'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
+
+import { Comment } from '@/src/types/types'
+
 import CommentSettings from './CommentSettings'
 
 function CommentCard({ comment }: { comment: Comment }) {

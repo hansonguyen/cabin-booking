@@ -8,14 +8,14 @@ import {
   ModalHeader,
   Textarea,
 } from '@nextui-org/react'
-
 import {Checkbox} from '@nextui-org/react'
+import { useEffect,useState } from 'react'
+import React, { ChangeEvent } from 'react'
+import { toast } from 'react-toastify'
+
 import { Event } from '@/src/types/types'
 import { updateEvent, validateNewEvent } from '@/src/utils/actions'
 import { isEvent } from '@/src/utils/utils'
-import { toast } from 'react-toastify'
-import { useState, useEffect } from 'react'
-import React, { ChangeEvent } from 'react'
 
 
 type EditEventModalProps = {

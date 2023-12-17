@@ -1,9 +1,8 @@
 'use client'
 
 import {motion, useScroll, useTransform} from 'framer-motion'
-import React, {useRef} from "react";
 import Image from "next/image"
-
+import React, {useRef} from "react";
 
 import m1 from '@/src/images/tahoe.jpg'
 

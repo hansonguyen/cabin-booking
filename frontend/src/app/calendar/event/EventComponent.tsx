@@ -1,10 +1,11 @@
 import '@/src/styles/globals.css'
 
+import { faComment } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useEffect,useState } from 'react'
+
 import { Event } from '@/src/types/types'
 import { getComments} from '@/src/utils/actions'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faComment } from '@fortawesome/free-solid-svg-icons'
-import { useState, useEffect } from 'react'
 
 type EventComponentProps = {
   event: Event

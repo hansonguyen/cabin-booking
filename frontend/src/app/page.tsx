@@ -1,8 +1,9 @@
-import Link from "next/link"
 import Image from "next/image"
+import Link from "next/link"
+
+import TextBlock  from '@/src/components/HomePageText'
 import Parallax from "@/src/components/Parallax"
 import m1 from '@/src/images/Mountain0.jpg'
-import TextBlock  from '@/src/components/HomePageText'
 function App() {
   return (
     <div className="App">

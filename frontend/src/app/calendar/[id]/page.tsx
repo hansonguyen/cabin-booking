@@ -1,6 +1,8 @@
+import { getServerSession } from 'next-auth'
+
 import { getComments, getSingleEvent } from '@/src/utils/actions'
 import { authOptions } from '@/src/utils/auth'
-import { getServerSession } from 'next-auth'
+
 import EventSettings from '../event/EventSettings'
 import CommentCard from './comment/CommentCard'
 import NewComment from './comment/NewComment'

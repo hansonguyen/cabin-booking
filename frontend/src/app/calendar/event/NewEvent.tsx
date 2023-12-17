@@ -1,14 +1,14 @@
 'use client'
 import { Input } from '@nextui-org/react'
+import {Checkbox} from "@nextui-org/react"
 import { experimental_useOptimistic as useOptimistic, useRef } from 'react'
+import { useState } from 'react'
 import { toast } from 'react-toastify'
 
 import CreateButton from '@/src/components/CreateButton'
 import { Event } from '@/src/types/types'
 import { createEvent, validateNewEvent } from '@/src/utils/actions'
 import { isEvent } from '@/src/utils/utils'
-import {Checkbox} from "@nextui-org/react"
-import { useState } from 'react'
 
 import MainCalendar from '../MainCalendar'
 

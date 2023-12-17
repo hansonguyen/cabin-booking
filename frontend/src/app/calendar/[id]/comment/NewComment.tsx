@@ -1,12 +1,13 @@
 'use client'
 
-import CreateButton from '@/src/components/CreateButton'
-import { createComment, validateNewComment } from '@/src/utils/actions'
-import { isComment } from '@/src/utils/utils'
 import { Button, Textarea } from '@nextui-org/react'
 import { useParams } from 'next/navigation'
 import { useRef } from 'react'
 import { toast } from 'react-toastify'
+
+import CreateButton from '@/src/components/CreateButton'
+import { createComment, validateNewComment } from '@/src/utils/actions'
+import { isComment } from '@/src/utils/utils'
 
 function NewComment() {
   const params = useParams()

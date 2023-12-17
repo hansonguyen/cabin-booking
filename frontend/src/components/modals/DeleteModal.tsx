@@ -8,12 +8,12 @@ import {
   ModalFooter,
   ModalHeader
 } from '@nextui-org/react'
+import { useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
 
 import { Comment, Event } from '@/src/types/types'
 import { deleteComment, deleteEvent } from '@/src/utils/actions'
 import { isEvent } from '@/src/utils/utils'
-import { useRouter } from 'next/navigation'
 
 type DeleteModalProps = {
   item: Event | Comment

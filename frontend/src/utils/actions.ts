@@ -1,6 +1,6 @@
 'use server'
-import { getServerSession } from 'next-auth'
 import { revalidateTag } from 'next/cache'
+import { getServerSession } from 'next-auth'
 
 import { Comment, CommentSchema, Event, EventSchema } from '../types/types'
 import { authOptions } from './auth'

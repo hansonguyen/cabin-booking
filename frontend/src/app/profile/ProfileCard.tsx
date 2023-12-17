@@ -1,9 +1,10 @@
 'use client'
-import { Event } from '@/src/types/types'
 import { UserType } from '@aws-sdk/client-cognito-identity-provider'
 import { Card, CardBody, CardHeader } from '@nextui-org/react'
-import { useSession } from 'next-auth/react'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
+
+import { Event } from '@/src/types/types'
 
 export default function ProfileCard({
   user,

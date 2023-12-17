@@ -7,12 +7,12 @@ import {
   ModalFooter,
   ModalHeader
 } from '@nextui-org/react'
+import { useParams } from 'next/navigation'
+import { toast } from 'react-toastify'
 
 import { Comment } from '@/src/types/types'
 import { updateComment, validateNewComment } from '@/src/utils/actions'
 import { isComment } from '@/src/utils/utils'
-import { useParams } from 'next/navigation'
-import { toast } from 'react-toastify'
 
 type EditCommentModal = {
   comment: Comment

@@ -1,7 +1,3 @@
-import DeleteModal from '@/src/components/modals/DeleteModal'
-import EditCommentModal from '@/src/components/modals/EditCommentModal'
-import useCommentSettings from '@/src/hooks/useCommentSettings'
-import { Comment } from '@/src/types/types'
 import {
   Button,
   Dropdown,
@@ -11,6 +7,11 @@ import {
 } from '@nextui-org/react'
 import { FaRegTrashCan } from 'react-icons/fa6'
 import { FiEdit, FiSettings } from 'react-icons/fi'
+
+import DeleteModal from '@/src/components/modals/DeleteModal'
+import EditCommentModal from '@/src/components/modals/EditCommentModal'
+import useCommentSettings from '@/src/hooks/useCommentSettings'
+import { Comment } from '@/src/types/types'
 
 function CommentSettings({ comment }: { comment: Comment }) {
   const {

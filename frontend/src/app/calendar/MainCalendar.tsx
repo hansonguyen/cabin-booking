@@ -8,13 +8,13 @@ import getDay from 'date-fns/getDay'
 import enUS from 'date-fns/locale/en-US'
 import parse from 'date-fns/parse'
 import startOfWeek from 'date-fns/startOfWeek'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 
 import { Event } from '@/src/types/types'
 
 import EventComponent from './event/EventComponent'
-import { useRouter } from 'next/navigation'
 
 const locales = {
   'en-US': enUS

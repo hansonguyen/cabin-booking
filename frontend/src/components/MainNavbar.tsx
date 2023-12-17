@@ -1,4 +1,6 @@
 'use client'
+import '@/src/styles/homePage.css'
+
 import {
   Avatar,
   Button,
@@ -18,7 +20,6 @@ import { signOut, useSession } from 'next-auth/react'
 import React from 'react'
 import { BiHelpCircle, BiLogOut } from 'react-icons/bi'
 import { BsFillPersonFill, BsPersonCircle } from 'react-icons/bs'
-import '@/src/styles/homePage.css'
 
 function MainNavbar() {
   const router = useRouter()

@@ -5,6 +5,7 @@ import {
   ListUsersCommand,
   UserType
 } from '@aws-sdk/client-cognito-identity-provider'
+
 import { redis } from './redis'
 
 const config: CognitoIdentityProviderClientConfig = {

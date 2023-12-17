@@ -8,6 +8,7 @@ import {
   ModalHeader
 } from '@nextui-org/react'
 import { FiSearch } from 'react-icons/fi'
+
 import { getAllUsers } from '@/src/utils/users'
 //  import { useEffect, useState } from 'react'
 
