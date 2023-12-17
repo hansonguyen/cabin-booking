@@ -15,7 +15,9 @@ export default function ProfileCard({
 }) {
   // Initialize profile data
   const { data: session } = useSession()
-  let userId: string | undefined, name: string | undefined, email: string | undefined
+  let userId: string | undefined,
+    name: string | undefined,
+    email: string | undefined
   if (user && user.Attributes && user.Attributes.length >= 3) {
     userId = user.Attributes[0].Value
     name = user.Attributes[1].Value
@@ -41,7 +43,11 @@ export default function ProfileCard({
               {session?.user.id === userId ? 'My' : name + "'s"} Events
             </h6>
             {userEvents.map((event) => {
-              return <Link href={`/calendar/${event._id}`}>{event.title}</Link>
+              return (
+                <Link key={event._id} href={`/calendar/${event._id}`}>
+                  {event.title}
+                </Link>
+              )
             })}
           </div>
         ) : (
