@@ -1,0 +1,24 @@
+{
+  "name": "lake-mary-cloudflare",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build:frontend": "node build-frontend.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test test/*.test.ts",
+    "db:local": "wrangler d1 migrations apply cabin --local",
+    "db:remote": "wrangler d1 migrations apply cabin --remote",
+    "deploy": "npm run build:frontend && wrangler deploy",
+    "test:shared": "npm run build:frontend && node --experimental-strip-types test/shared-browser.mjs"
+  },
+  "dependencies": {
+    "jose": "^6.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260924.1",
+    "@types/node": "^26.4.1",
+    "typescript": "~6.0.3",
+    "wrangler": "^4.0.0"
+  }
+}

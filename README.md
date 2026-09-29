@@ -1,79 +1,28 @@
-# Lake Mary Cabin Booking Website
+# Lake Mary Cabin
 
-A user-friendly website for booking and planning memorable trips to the Lake Mary Cabin with family and friends.
+A refreshed, locally runnable frontend and a low-cost shared Cloudflare backend for family stays, chores, supplies, and cabin knowledge.
 
-## Getting Started
+## Start here
 
-### Dependencies
+With Node.js 24 LTS installed:
 
-The following dependencies are required to run the application properly:
-
-* npm and Node.js
-* AWS Lambda, API Gateway, and Cognito
-
-### Setup
-
-**Note:** This website won't function without the correct environment variables and API configuration.
-
-#### Backend
-
-The backend consists of a powerful CRUD API built in Go, deployed using AWS Lambda and API Gateway. Additional Lambda functions facilitate AWS Cognito authorization. To set up authentication, create a user pool in AWS Cognito with the following required environment variables:
-
-```
-COGNITO_CLIENT_ID=
-COGNITO_CLIENT_SECRET=
-COGNITO_ISSUER=
-```
-
-#### Frontend
-
-The frontend utilizes NextAuth for authentication. You'll need to generate a secret variable for authentication to work correctly:
-
-```
-NEXTAUTH_SECRET=
-```
-
-
-### Running the Program
-
-#### Backend
-
-* Create Go binary files for Lambda deployment:
-
-```shell
-go build main.go
-```
-* Compress the main binary into a ZIP folder for deployment.
-* Connect AWS API Gateway routes to Lambda functions.
-
-#### Frontend
-* Navigate to the frontend directory:
-```shell
+```sh
 cd frontend
-```
-
-* Install dependencies:
-```shell
-npm install
-```
-
-* Run the development server:
-```shell
+npm ci
 npm run dev
 ```
 
-## Authors
+Open http://localhost:3000. No AWS credentials, Redis, database, or environment variables are needed for this frontend preview.
 
-* [Hanson Nguyen](https://www.linkedin.com/in/hansonnguyen/)
-* [Lawrence Smith](https://www.linkedin.com/in/lawrencefs/)
+Choose a demo member, browse availability, and plan a stay with dates, guest details, and notes. This preview stores changes in this browser. The shared Cloudflare build is deployed at [cabin.lakemary.workers.dev](https://cabin.lakemary.workers.dev) with a private, exact-email Access policy and one-time email codes. The first approved sign-in and the calendar, care, and knowledge screens have been verified live. Manage approved family emails in Cloudflare Access.
 
-## Acknoledgements
-We used the following libraries and technologies in building this project:
+See [frontend/README.md](frontend/README.md) for preview details and [cloudflare/README.md](cloudflare/README.md) for the exact account setup and deployment sequence. The shared site does not need a laptop running 24/7.
 
-* [Next.js](https://nextjs.org/)
-* [AWS](https://aws.amazon.com/)
-* [Go](https://go.dev/)
-* [TypeScript](https://www.typescriptlang.org/)
-* [NextUI](https://nextui.org/)
-* [TailwindCSS](https://tailwindcss.com/)
-* [NextAuth](https://next-auth.js.org/)
+## Repository
+
+- `frontend/`: active Next.js / React / TypeScript app.
+- `cloudflare/`: Worker API, D1 migrations, Access identity verification, and deployment guide.
+- `backend/`: original Go / AWS Lambda backend, unchanged and not needed for this preview.
+- `legacy/frontend/`: original Cognito, NextAuth, and Redis integration retained as reference, not part of the active build.
+
+Originally created by Hanson Nguyen and Lawrence Smith.
