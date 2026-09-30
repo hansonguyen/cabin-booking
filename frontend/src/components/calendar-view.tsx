@@ -34,6 +34,13 @@ export default function CalendarView({
     return !g || b.start < g.start || b.end > g.end
   })
   const weeks = monthWeeks(month.getFullYear(), month.getMonth(), standalone, gatherings)
+  const visibleHosts = [...new Set(weeks.flatMap((week) => [
+    ...week.stays.map(({ item }) => item.userId),
+    ...week.gatherings.flatMap(({ item }) => plansFor(item, bookings).map((plan) => plan.userId))
+  ]))]
+    .map(memberOf)
+    .sort((a, b) => a.name.localeCompare(b.name))
+  const hasGatherings = weeks.some((week) => week.gatherings.length > 0)
   const shownMonth = dateKey(month).slice(0, 7)
   const upcoming = onlyMine
     ? bookings
@@ -138,6 +145,7 @@ export default function CalendarView({
                   style={place(from, to, lane)}
                   onClick={() => view(booking)}
                   aria-label={`${host.name}, ${dateRange(booking.start, booking.end)}`}
+                  title={`${host.name} · ${dateRange(booking.start, booking.end)}`}
                 >
                   <Avatar member={host} size={24} />
                   <span className="stay-bar-label">
@@ -150,6 +158,22 @@ export default function CalendarView({
           </div>
         ))}
       </section>
+      {(visibleHosts.length > 0 || hasGatherings) && (
+        <ul className="calendar-key" aria-label="Calendar colors">
+          {visibleHosts.map((host) => (
+            <li key={host.id}>
+              <Avatar member={host} size={24} />
+              <span>{host.name}{host.id === userId ? ' (you)' : ''}</span>
+            </li>
+          ))}
+          {hasGatherings && (
+            <li>
+              <span className="gathering-swatch" aria-hidden="true"><Users size={15} /></span>
+              <span>Family gatherings</span>
+            </li>
+          )}
+        </ul>
+      )}
       <p className="fine-print">
         Stays can overlap. The calendar is for letting family know who’s going, not for claiming the cabin. Tap a day
         to plan a stay. For holidays when everyone goes up, add a gathering once instead of everyone adding a stay.

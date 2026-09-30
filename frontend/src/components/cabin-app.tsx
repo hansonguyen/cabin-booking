@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { BookOpen, CalendarDays, House, ListChecks, Plus, X } from 'lucide-react'
 import { type Member, members } from '../lib/bookings'
 import { sharedBackend } from '../lib/shared-api'
+import { preferredMemberColor } from '../lib/member-colors'
 import BookView from './book-view'
 import CalendarView from './calendar-view'
 import HomeView, { type View } from './home-view'
@@ -19,7 +20,6 @@ const tabs: { id: View; label: string; icon: typeof House }[] = [
   { id: 'list', label: 'The list', icon: ListChecks },
   { id: 'book', label: 'Cabin book', icon: BookOpen }
 ]
-const colors = ['green', 'clay', 'blue', 'gold']
 
 function readHash(): { view: View; arg: string } {
   const [view, ...rest] = window.location.hash.replace(/^#/, '').split('/')
@@ -27,7 +27,7 @@ function readHash(): { view: View; arg: string } {
 }
 
 /** Assigned names follow the email identity; color stays stable when a name changes. */
-function memberFromEmail(id: string, displayName?: string): Member {
+function memberFromEmail(id: string, displayName?: string, color: string = preferredMemberColor(id)): Member {
   const name = displayName || id
     .split('@')[0]
     .replace(/[._-]+/g, ' ')
@@ -38,8 +38,7 @@ function memberFromEmail(id: string, displayName?: string): Member {
     .slice(0, 2)
     .join('')
     .toUpperCase()
-  const hash = [...id].reduce((sum, ch) => sum + ch.charCodeAt(0), 0)
-  return { id, name, initials, color: colors[hash % colors.length] }
+  return { id, name, initials, color }
 }
 
 export default function CabinApp() {
@@ -80,7 +79,10 @@ export default function CabinApp() {
   const knownMembers: Member[] = sharedBackend
     ? Array.from(new Set([userId, ...state.profiles.map((p) => p.email), ...bookings.map((b) => b.userId), ...care.tasks.map((t) => t.assignee)]))
         .filter(Boolean)
-        .map((id) => memberFromEmail(id, state.profiles.find((p) => p.email === id)?.displayName))
+        .map((id) => {
+          const profile = state.profiles.find((p) => p.email === id)
+          return memberFromEmail(id, profile?.displayName, profile?.color)
+        })
     : members
   const memberOf = (id: string) =>
     knownMembers.find((m) => m.id === id) ?? (sharedBackend ? memberFromEmail(id) : { id, name: id, initials: id.slice(0, 2).toUpperCase(), color: 'green' })

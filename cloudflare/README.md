@@ -87,6 +87,14 @@ All signed-in family members can read `GET /api/members`. It combines assigned n
 
 Set or change the administrator using `npx wrangler secret put ADMIN_EMAIL`, entering the exact approved email at the prompt. This setting is separate from Cloudflare Access: adding a name does not approve sign-in, grant admin privileges, change booking ownership, or fetch a Gmail profile. The footer continues to show the full signed-in email. No passwords or separate accounts were added.
 
+## Calendar colors
+
+Migration `0007_member_colors.sql` adds a separate email-to-color directory. Existing people receive different colors from a ten-color palette before any color is reused. On a person's first visit or name assignment, the API saves a least-used color, preferring their email's stable hash when several colors are equally available. The allocation uses one SQL statement, so simultaneous visits cannot allocate from stale counts. Once assigned, a color stays fixed across name edits, new members, reloads, and devices.
+
+Colors do not grant Access approval, admin privileges, or booking ownership. Name edits cannot change a color. `GET /api/members` includes the saved color and only writes when an identity needs its first assignment. The monthly calendar key shows the hosts whose stays are visible; bars and avatars use the same saved color. Names and initials remain visible. Family gatherings retain orange squared bands and their group icon. After ten people, colors are reused evenly; text continues to identify each person.
+
+Apply migration 0007 before deploying the updated Worker. It adds only the color table and index, and does not edit existing stays, gatherings, tasks, pages, or display names. The previous Worker can continue operating while the migration is applied.
+
 ## Shorter address
 
 On September 28, 2026 (Pacific time), the existing Worker was renamed from `lake-mary-cabin` to `cabin`, and the account's Workers subdomain changed from `lake-mary-cloudflare` to `lakemary`. Use **https://cabin.lakemary.workers.dev**. The previous address no longer routes to the app; update bookmarks and shared links.

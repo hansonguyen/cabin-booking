@@ -192,6 +192,49 @@ try {
   await expect(comingUp.getByRole('button').filter({ hasText: 'Family reunion' })).toHaveCount(0)
   await expect(comingUp).toContainText('Relative')
   assert.equal((await call('/bookings')).data.find(b => b.id === plans.id).gatheringId, null)
+  console.log('Checking distinct, persistent calendar colors…')
+  const nextMonth = new Date()
+  nextMonth.setDate(1)
+  nextMonth.setMonth(nextMonth.getMonth() + 1)
+  const monthKey = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, '0')}`
+  const hosts = [
+    [email, 'Lawrence Smith'], ['alex@example.com', 'Alex Smith'],
+    ['emma@example.com', 'Emma Smith'], ['hanson@example.com', 'Hanson Nguyen']
+  ]
+  for (const [address, name] of hosts) {
+    if (address !== email) assert.equal((await call('/members', 'PUT', { email: address, displayName: name, version: 0 }, email)).status, 200)
+    assert.equal((await call('/bookings', 'POST', {
+      title: `${name}’s stay`, start: `${monthKey}-08`, end: `${monthKey}-12`, guests: 2, names: '', notes: '', open: false
+    }, address)).status, 201)
+  }
+  assert.equal((await call('/gatherings', 'POST', {
+    title: 'Family weekend', start: `${monthKey}-09`, end: `${monthKey}-13`, notes: '', repeats: false
+  }, email)).status, 201)
+  signedInEmail = email
+  await page.goto('https://cabin.test/#calendar')
+  await page.reload()
+  await page.getByRole('button', { name: 'Next month', exact: true }).click()
+  const readColors = async () => {
+    const colors = []
+    for (const [, name] of hosts) {
+      const bar = page.locator('.stay-bar').and(page.getByRole('button', { name: `${name},`, exact: false })).first()
+      await expect(bar).toBeVisible()
+      await expect(page.getByRole('list', { name: 'Calendar colors' })).toContainText(name)
+      colors.push(await bar.evaluate((el) => getComputedStyle(el).backgroundColor))
+    }
+    return colors
+  }
+  const calendarColors = await readColors()
+  assert.equal(new Set(calendarColors).size, hosts.length)
+  await expect(page.getByRole('list', { name: 'Calendar colors' })).toContainText('Family gatherings')
+  await page.screenshot({ path: '/private/tmp/cabin-calendar-colors-desktop.png' })
+  signedInEmail = 'emma@example.com'
+  await page.reload()
+  await page.getByRole('button', { name: 'Next month', exact: true }).click()
+  assert.deepEqual(await readColors(), calendarColors)
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.screenshot({ path: '/private/tmp/cabin-calendar-colors-mobile.png', fullPage: true })
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true)
   await signOut.click()
   await page.waitForURL('https://cabin.test/cdn-cgi/access/logout')
   await expect(page.getByRole('heading', { name: 'Signed out' })).toBeVisible()

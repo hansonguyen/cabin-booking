@@ -322,6 +322,41 @@ p.tag {
   --tint: #ede2c4;
   --tint-ink: #5a4410;
 }
+.m-plum {
+  --solid: #715174;
+  --tint: #e9dfed;
+  --tint-ink: #4e3452;
+}
+.m-teal {
+  --solid: #2c6a64;
+  --tint: #d6e9e4;
+  --tint-ink: #1d4843;
+}
+.m-rose {
+  --solid: #9b4f65;
+  --tint: #f1dce3;
+  --tint-ink: #692f40;
+}
+.m-indigo {
+  --solid: #505d91;
+  --tint: #e0e3f2;
+  --tint-ink: #333e68;
+}
+.m-olive {
+  --solid: #636b32;
+  --tint: #e5e8d4;
+  --tint-ink: #404720;
+}
+.m-slate {
+  --solid: #53636e;
+  --tint: #dee5e9;
+  --tint-ink: #35444f;
+}
+.m-cocoa {
+  --solid: #755841;
+  --tint: #e9e0d5;
+  --tint-ink: #4e3827;
+}
 .avatar[class*='m-'] {
   background: var(--solid);
 }
@@ -907,6 +942,29 @@ button.check-row-main:hover .row-title {
 .bar-more {
   margin-left: 4px;
   font-size: 12px;
+}
+.calendar-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+.calendar-key li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.gathering-swatch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 24px;
+  border: 1px solid #d8b39b;
+  border-radius: 5px;
+  color: var(--ember-ink);
+  background: var(--ember-tint);
 }
 .gathering-mark {
   flex-shrink: 0;

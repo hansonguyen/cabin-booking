@@ -21,7 +21,7 @@ export type Booking = {
 export const MAX_GUESTS = 30
 export const members: Member[] = [
   { id: 'lawrence', name: 'Lawrence Smith', initials: 'LS', color: 'green' },
-  { id: 'hanson', name: 'Hanson Nguyen', initials: 'HN', color: 'clay' },
+  { id: 'hanson', name: 'Hanson Nguyen', initials: 'HN', color: 'plum' },
   { id: 'emma', name: 'Emma Smith', initials: 'ES', color: 'blue' },
   { id: 'alex', name: 'Alex Smith', initials: 'AS', color: 'gold' }
 ]

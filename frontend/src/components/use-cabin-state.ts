@@ -11,7 +11,7 @@ const GATHERINGS_STORE = 'lake-mary-gatherings-v1'
 const CARE_STORE = 'lake-mary-care-v1'
 const MEMBER_STORE = 'lake-mary-member'
 const emptyCare: CabinData = { version: 1, tasks: [], articles: [] }
-export type MemberProfile = { email: string; displayName: string; version: number }
+export type MemberProfile = { email: string; displayName: string; version: number; color?: string }
 
 const message = (cause: unknown, fallback: string) => (cause instanceof Error ? cause.message : fallback)
 

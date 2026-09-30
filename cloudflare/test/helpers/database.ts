@@ -13,6 +13,7 @@ export function setup(legacy = { version: 1, tasks: [] as object[], articles: []
   sql.exec(readFileSync(new URL('../../migrations/0004_member_names.sql', import.meta.url), 'utf8'))
   sql.exec(readFileSync(new URL('../../migrations/0005_item_creators.sql', import.meta.url), 'utf8'))
   sql.exec(readFileSync(new URL('../../migrations/0006_gatherings.sql', import.meta.url), 'utf8'))
+  sql.exec(readFileSync(new URL('../../migrations/0007_member_colors.sql', import.meta.url), 'utf8'))
   function prepare(query: string) {
     let args: any[] = []
     return {
