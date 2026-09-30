@@ -12,11 +12,14 @@ Use Node.js 24 LTS. From `frontend/`, run `npm ci`. From this directory:
 npm ci
 npm run typecheck
 npm test
+npm run test:sql-limits
 npm run build:frontend
 npm run db:local
 ```
 
 `npm run build:frontend` sets `NEXT_PUBLIC_SHARED_BACKEND=1` for the static export, so it expects a protected Worker API. Run `npm run build` from `frontend/` without that flag to restore the browser-only preview. Wrangler's local D1 state is in `.wrangler/` and is ignored by Git. Live Access login is tested after deployment; the unit tests use a locally signed JWT and do not depend on a Cloudflare account.
+
+`npm run test:sql-limits` needs Python 3.11 or later. It runs the real member-directory SQL and migrations on isolated SQLite with a five-term compound-SELECT limit. Node's SQLite tests use a more permissive default, so they cannot catch this Cloudflare production constraint by themselves.
 
 ## Current status and remaining Cloudflare setup
 
@@ -63,7 +66,7 @@ Task/page creation accepts the frontend's generated `id`. Updates and deletions 
 
 ## Migration and release
 
-1. Run `npm run typecheck`, `npm test`, and `npm run test:shared` here. The shared browser test uses Chrome, the production frontend, real API handlers, and isolated in-memory SQLite. It does not use or change live family data. Run the frontend's own checks separately; its browser suite requires a preview-mode build.
+1. Run `npm run typecheck`, `npm test`, `npm run test:sql-limits`, and `npm run test:shared` here. The shared browser test uses Chrome, the production frontend, real API handlers, and isolated in-memory SQLite. It does not use or change live family data. Run the frontend's own checks separately; its browser suite requires a preview-mode build.
 2. Test migrations locally with `npm run db:local` and validate the bundle with `npx wrangler deploy --dry-run`.
 3. Record the current recovery bookmark with `npx wrangler d1 time-travel info cabin --json`. For a separately authorized long-term backup, export to a private location outside the repository; do not include family records in Git.
 4. Apply `npm run db:remote`, then immediately run `npm run deploy`. Migration 0003 makes the legacy care document read-only, so old Worker versions cannot save into the wrong store during rollout. Reads and bookings remain available; list/page writes require the new Worker.
@@ -94,6 +97,8 @@ Migration `0007_member_colors.sql` adds a separate email-to-color directory. Exi
 Colors do not grant Access approval, admin privileges, or booking ownership. Name edits cannot change a color. `GET /api/members` includes the saved color and only writes when an identity needs its first assignment. The monthly calendar key shows the hosts whose stays are visible; bars and avatars use the same saved color. Names and initials remain visible. Family gatherings retain orange squared bands and their group icon. After ten people, colors are reused evenly; text continues to identify each person.
 
 Apply migration 0007 before deploying the updated Worker. It adds only the color table and index, and does not edit existing stays, gatherings, tasks, pages, or display names. The previous Worker can continue operating while the migration is applied.
+
+On September 29, 2026, the member-directory query exceeded D1's compound-SELECT limit and returned HTTP 500. Worker version `1818cae6-f8ce-4978-bddd-2520b8c8c698` fixed it by grouping saved identities and activity sources in separate CTEs. The corrected query was checked directly against production D1, regular Chrome sign-in was verified, and the user confirmed successful loading. The stricter SQL-limit regression check now accompanies the Node tests. No database migration was needed for this correction.
 
 ## Shorter address
 

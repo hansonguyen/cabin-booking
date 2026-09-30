@@ -9,13 +9,18 @@ export const canManageMembers = isAdmin
 export async function membersRoute(request: Request, env: Env, email: string): Promise<Response> {
   if (request.method === 'GET') {
     const rows = await env.DB.prepare(`
-      WITH emails AS (
+      -- D1 permits at most five terms per compound SELECT. Keep each source group below it.
+      WITH saved_emails AS (
         SELECT email FROM member_profiles
         UNION SELECT email FROM member_colors
-        UNION SELECT owner_email FROM bookings
+      ), active_emails AS (
+        SELECT owner_email AS email FROM bookings
         UNION SELECT lower(assignee) FROM tasks WHERE instr(assignee, '@') > 0
         UNION SELECT lower(author) FROM book_pages WHERE instr(author, '@') > 0
         UNION SELECT lower(created_by) FROM gatherings WHERE instr(created_by, '@') > 0
+      ), emails AS (
+        SELECT email FROM saved_emails
+        UNION SELECT email FROM active_emails
         UNION SELECT ?
       )
       SELECT emails.email, COALESCE(p.display_name, '') AS displayName,

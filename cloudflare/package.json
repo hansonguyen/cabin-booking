@@ -7,6 +7,7 @@
     "build:frontend": "node build-frontend.mjs",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --test test/*.test.ts",
+    "test:sql-limits": "python3 test/sql-limits.py",
     "db:local": "wrangler d1 migrations apply cabin --local",
     "db:remote": "wrangler d1 migrations apply cabin --remote",
     "deploy": "npm run build:frontend && wrangler deploy",
