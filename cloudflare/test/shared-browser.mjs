@@ -23,6 +23,9 @@ try {
   await page.route('https://cabin.test/**', async route => {
     const request = route.request()
     const url = new URL(request.url())
+    if (url.pathname === '/cdn-cgi/access/logout') {
+      return route.fulfill({ contentType: 'text/html', body: '<h1>Signed out</h1>' })
+    }
     if (url.pathname.startsWith('/api/')) {
       const result = await api(new Request(url, { method: request.method(), body: request.postData() ?? undefined }), env, signedInEmail)
       return route.fulfill({ status: result.status, headers: Object.fromEntries(result.headers), body: await result.text() })
@@ -34,6 +37,21 @@ try {
     } catch { return route.fulfill({ status: 404 }) }
   })
   await page.goto('https://cabin.test/#list')
+  const signOut = page.getByRole('link', { name: 'Sign out', exact: true })
+  await expect(signOut).toBeVisible()
+  await expect(signOut).toHaveAttribute('href', '/cdn-cgi/access/logout')
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 1000 })
+    await expect(signOut).toBeInViewport()
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `No overflow at ${width}px`)
+    const brand = await page.locator('.brand').boundingBox()
+    const actions = await page.locator('.header-actions').boundingBox()
+    assert.ok(brand.height < 44 && brand.x + brand.width <= actions.x, `Header fits at ${width}px: ${JSON.stringify({ brand, actions })}`)
+  }
+  await page.screenshot({ path: '/private/tmp/cabin-sign-out-desktop.png' })
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.screenshot({ path: '/private/tmp/cabin-sign-out-mobile.png' })
+  await page.setViewportSize({ width: 1440, height: 1000 })
   await page.getByRole('button', { name: 'Family names', exact: true }).click()
   await page.getByRole('button', { name: `Edit name for ${email}` }).click()
   await page.getByLabel('Display name', { exact: true }).fill('Lawrence Smith')
@@ -174,6 +192,9 @@ try {
   await expect(comingUp.getByRole('button').filter({ hasText: 'Family reunion' })).toHaveCount(0)
   await expect(comingUp).toContainText('Relative')
   assert.equal((await call('/bookings')).data.find(b => b.id === plans.id).gatheringId, null)
+  await signOut.click()
+  await page.waitForURL('https://cabin.test/cdn-cgi/access/logout')
+  await expect(page.getByRole('heading', { name: 'Signed out' })).toBeVisible()
   assert.deepEqual(errors, [])
   console.log('Shared browser integration passed: add/claim/complete/reopen, page create/edit, guestbook edits twice and reload persistence, gathering plans, edits, and removal.')
 } finally {

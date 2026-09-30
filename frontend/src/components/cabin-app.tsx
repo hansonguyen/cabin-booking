@@ -140,9 +140,14 @@ export default function CabinApp() {
             </button>
             {sharedBackend ? (
               userId && (
-                <span className="who" title={`Signed in as ${userId}`}>
-                  <Avatar member={user} size={38} />
-                </span>
+                <>
+                  <span className="who" title={`Signed in as ${userId}`}>
+                    <Avatar member={user} size={38} />
+                  </span>
+                  <a className="button quiet sign-out-button" href="/cdn-cgi/access/logout">
+                    Sign out
+                  </a>
+                </>
               )
             ) : (
               <label className="who preview-who">
