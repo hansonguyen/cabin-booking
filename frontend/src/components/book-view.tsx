@@ -310,18 +310,20 @@ function PageEditor({
             </select>
           </label>
         </div>
-        <label className="field">
-          <span>
-            When you’d need this <span className="optional">(optional)</span>
-          </span>
-          <textarea
-            rows={2}
-            maxLength={8000}
-            placeholder="What happened, or when this comes up"
-            value={draft.problem}
-            onChange={(e) => set({ problem: e.target.value })}
-          />
-        </label>
+        {draft.topic !== basicsTopic && (
+          <label className="field">
+            <span>
+              When you’d need this <span className="optional">(optional)</span>
+            </span>
+            <textarea
+              rows={2}
+              maxLength={8000}
+              placeholder="What happened, or when this comes up"
+              value={draft.problem}
+              onChange={(e) => set({ problem: e.target.value })}
+            />
+          </label>
+        )}
         <label className="field">
           The page
           <textarea

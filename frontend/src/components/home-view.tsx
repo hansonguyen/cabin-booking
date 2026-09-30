@@ -249,7 +249,7 @@ export default function HomeView({
             </ul>
           ) : (
             <p className="empty-line">
-              Nothing written yet. Wi-Fi, getting in, and closing up are good first pages.
+              Nothing written yet. Getting there, getting in, and closing up are good first pages.
             </p>
           )}
         </section>
