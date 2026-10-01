@@ -181,7 +181,7 @@ function StayForm({
       guests: 2,
       names: '',
       notes: '',
-      open: false,
+      open: true,
       gatheringId: joining?.id ?? null
     }
   })
