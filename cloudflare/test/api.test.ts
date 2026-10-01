@@ -71,9 +71,9 @@ test('invalid task/page data and unversioned writes are rejected without changes
   sql.close()
 })
 
-test('stays may overlap; notes are host-only and do not change dates', async () => {
+test('open stays may overlap; notes are host-only and do not change dates', async () => {
   const { call, sql } = setup()
-  const input = { title: 'Family visit', start: '2099-10-01', end: '2099-10-03', guests: 2, names: 'Family', notes: 'Bring coffee', open: false }
+  const input = { title: 'Family visit', start: '2099-10-01', end: '2099-10-03', guests: 2, names: 'Family', notes: 'Bring coffee', open: true }
   const created = await call('/bookings', 'POST', input)
   assert.equal(created.status, 201)
   const booking = created.data
@@ -93,6 +93,53 @@ test('stays may overlap; notes are host-only and do not change dates', async () 
   assert.equal((await call(`/bookings/${booking.id}/note`, 'PATCH', note)).status, 409)
   assert.equal((await call(`/bookings/${booking.id}`, 'DELETE')).status, 204)
   assert.equal(sql.prepare('SELECT COUNT(*) AS n FROM bookings').get()!.n, 1)
+  sql.close()
+})
+
+test('reserved stays reject overlaps and crossing ranges, allowing adjacent checkout dates', async () => {
+  const { call, sql } = setup()
+  const input = { title: 'Reserved visit', start: '2099-10-02', end: '2099-10-05', guests: 2, names: '', notes: '', open: false }
+  const closed = await call('/bookings', 'POST', input)
+  assert.equal(closed.status, 201)
+  for (const range of [input, { start: '2099-10-01', end: '2099-10-06' }, { start: '2099-10-04', end: '2099-10-06' }]) {
+    const rejected = await call('/bookings', 'POST', { ...input, ...range, open: true }, 'relative@example.com')
+    assert.equal(rejected.status, 409)
+    assert.match(rejected.data.error, /without room for more/)
+  }
+  assert.equal((await call('/bookings', 'POST', { ...input, start: '2099-10-01', end: input.start })).status, 201)
+  assert.equal((await call('/bookings', 'POST', { ...input, start: input.end, end: '2099-10-06' })).status, 201)
+  assert.equal((await call(`/bookings/${closed.data.id}`, 'PUT', { ...input, notes: 'Same reserved dates' })).status, 200)
+  assert.equal((await call('/bookings')).data.length, 3)
+  sql.close()
+})
+
+test('edits cannot move into reserved nights; saved overlaps survive closing and shrinking stays', async () => {
+  const { call, sql } = setup()
+  const input = { title: 'Host visit', start: '2099-10-02', end: '2099-10-05', guests: 2, names: '', notes: '', open: true }
+  const host = (await call('/bookings', 'POST', input)).data
+  const relativeInput = { ...input, start: '2099-10-03', end: '2099-10-04' }
+  const relative = (await call('/bookings', 'POST', relativeInput, 'relative@example.com')).data
+  const other = (await call('/bookings', 'POST', { ...input, start: '2099-10-06', end: '2099-10-08' }, 'other@example.com')).data
+  assert.equal((await call(`/bookings/${host.id}`, 'PUT', { ...input, open: false })).status, 200)
+  assert.equal((await call(`/bookings/${relative.id}`, 'PUT', { ...relativeInput, notes: 'Already booked' }, 'relative@example.com')).status, 200)
+  assert.equal((await call(`/bookings/${relative.id}`, 'PUT', { ...relativeInput, start: input.start }, 'relative@example.com')).status, 409)
+  assert.equal((await call(`/bookings/${other.id}`, 'PUT', input, 'other@example.com')).status, 409)
+  assert.equal((await call(`/bookings/${host.id}`, 'PUT', { ...input, open: false, end: '2099-10-04' })).status, 200)
+  assert.equal((await call('/bookings', 'POST', relativeInput, 'new@example.com')).status, 409)
+  assert.equal((await call(`/bookings/${host.id}`, 'PUT', input)).status, 200)
+  assert.equal((await call('/bookings', 'POST', relativeInput, 'new@example.com')).status, 201)
+  sql.close()
+})
+
+test('simultaneous closed bookings cannot both reserve the same nights', async () => {
+  const { call, sql } = setup()
+  const input = { title: 'Private visit', start: '2099-11-01', end: '2099-11-04', guests: 2, names: '', notes: '', open: false }
+  const results = await Promise.all([
+    call('/bookings', 'POST', input, 'first@example.com'),
+    call('/bookings', 'POST', input, 'second@example.com')
+  ])
+  assert.deepEqual(results.map((result) => result.status).sort(), [201, 409])
+  assert.equal((await call('/bookings')).data.length, 1)
   sql.close()
 })
 

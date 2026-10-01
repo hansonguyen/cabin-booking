@@ -49,9 +49,15 @@ export async function bookingsRoute(request: Request, env: Env, email: string): 
     const id = crypto.randomUUID()
     const now = new Date().toISOString()
     try {
-      const row = await env.DB.prepare('INSERT INTO bookings (id, owner_email, title, start_date, end_date, guests, guest_names, notes, open_to_company, gathering_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *')
-        .bind(id, email, input.title, input.start, input.end, input.guests, input.names, input.notes, Number(input.open), input.gatheringId, now, now).first<BookingRow>()
-      return json(publicBooking(row!), 201)
+      // Check availability in the same write so simultaneous requests cannot bypass it.
+      const row = await env.DB.prepare(`INSERT INTO bookings (id, owner_email, title, start_date, end_date, guests, guest_names, notes, open_to_company, gathering_id, created_at, updated_at)
+        SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+        WHERE NOT EXISTS (
+          SELECT 1 FROM bookings WHERE open_to_company = 0 AND gathering_id IS NULL
+            AND start_date < ? AND end_date > ?
+        ) RETURNING *`)
+        .bind(id, email, input.title, input.start, input.end, input.guests, input.names, input.notes, Number(input.open), input.gatheringId, now, now, input.end, input.start).first<BookingRow>()
+      return row ? json(publicBooking(row), 201) : json({ error: 'Those dates overlap a stay without room for more. Choose different dates or reload the calendar.' }, 409)
     } catch (error) {
       const response = constraintError(error)
       if (response) return response
@@ -85,9 +91,18 @@ export async function bookingsRoute(request: Request, env: Env, email: string): 
     if (invalid) return invalid
     const now = new Date(Math.max(Date.now(), Date.parse(old.updated_at) + 1)).toISOString()
     try {
-      const row = await env.DB.prepare('UPDATE bookings SET title = ?, start_date = ?, end_date = ?, guests = ?, guest_names = ?, notes = ?, open_to_company = ?, gathering_id = ?, updated_at = ? WHERE id = ? AND owner_email = ? RETURNING *')
-        .bind(input.title, input.start, input.end, input.guests, input.names, input.notes, Number(input.open), input.gatheringId, now, id, email).first<BookingRow>()
-      return json(publicBooking(row!))
+      const row = await env.DB.prepare(`UPDATE bookings SET title = ?, start_date = ?, end_date = ?, guests = ?, guest_names = ?, notes = ?, open_to_company = ?, gathering_id = ?, updated_at = ?
+        WHERE id = ? AND owner_email = ? AND updated_at = ?
+          AND NOT EXISTS (
+            SELECT 1 FROM bookings AS occupied
+            WHERE occupied.id != ? AND occupied.open_to_company = 0 AND occupied.gathering_id IS NULL
+              AND occupied.start_date < ? AND occupied.end_date > ?
+              AND (MAX(occupied.start_date, ?) < MAX(occupied.start_date, ?)
+                OR MIN(occupied.end_date, ?) > MIN(occupied.end_date, ?))
+          ) RETURNING *`)
+        .bind(input.title, input.start, input.end, input.guests, input.names, input.notes, Number(input.open), input.gatheringId, now,
+          id, email, old.updated_at, id, input.end, input.start, input.start, old.start_date, input.end, old.end_date).first<BookingRow>()
+      return row ? json(publicBooking(row)) : json({ error: 'This stay or its availability changed. Choose dates with room for more, or reload the calendar.' }, 409)
     } catch (error) {
       const response = constraintError(error)
       if (response) return response

@@ -21,7 +21,7 @@ export function parseBookingInput(value: unknown, today = new Date().toISOString
   if (typeof b.names !== 'string' || b.names.length > 300 || typeof b.notes !== 'string' || b.notes.length > 2000 || typeof b.open !== 'boolean') return 'Check guest names and notes.'
   const gatheringId = b.gatheringId ?? null
   if (gatheringId !== null && (typeof gatheringId !== 'string' || !/^[0-9a-f-]{36}$/.test(gatheringId))) return 'Choose a valid gathering.'
-  return { title: b.title.trim(), start: b.start, end: b.end, guests: b.guests, names: b.names, notes: b.notes, open: b.open, gatheringId }
+  return { title: b.title.trim(), start: b.start, end: b.end, guests: b.guests, names: b.names, notes: b.notes, open: gatheringId ? true : b.open, gatheringId }
 }
 
 export type GatheringInput = { title: string; start: string; end: string; notes: string; repeats: boolean }

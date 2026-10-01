@@ -175,7 +175,7 @@ export default function CalendarView({
         </ul>
       )}
       <p className="fine-print">
-        Stays can overlap. The calendar is for letting family know who’s going, not for claiming the cabin. Tap a day
+        You can book overlapping dates when existing stays have room for more. Otherwise, their nights are reserved. Tap a day
         to plan a stay. For holidays when everyone goes up, add a gathering once instead of everyone adding a stay.
       </p>
 

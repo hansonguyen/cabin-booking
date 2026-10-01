@@ -199,6 +199,36 @@ try {
   await expect(comingUp.getByRole('button').filter({ hasText: 'Family reunion' })).toHaveCount(0)
   await expect(comingUp).toContainText('Relative')
   assert.equal((await call('/bookings')).data.find(b => b.id === plans.id).gatheringId, null)
+  console.log('Checking reserved nights and availability changes while booking…')
+  const reservedInput = { title: 'Reserved nights', start: day(40), end: day(43), guests: 2, names: '', notes: '', open: false }
+  const reservedStay = await call('/bookings', 'POST', reservedInput, email)
+  assert.equal(reservedStay.status, 201)
+  const dayLabel = value => new Date(`${value}T12:00:00`).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+  const showReservedMonth = async suffix => {
+    for (let i = 0; i < 3 && !await dialog.getByRole('button', { name: `${dayLabel(day(40))}, ${suffix}`, exact: true }).isVisible(); i++) {
+      await dialog.getByRole('button', { name: 'Next month' }).click()
+    }
+  }
+  signedInEmail = 'relative@example.com'
+  await page.reload()
+  await page.getByRole('banner').getByRole('button', { name: 'Plan a stay' }).click()
+  await showReservedMonth('reserved')
+  await expect(dialog.getByRole('button', { name: `${dayLabel(day(40))}, reserved`, exact: true })).toBeDisabled()
+  await page.keyboard.press('Escape')
+  assert.equal((await call(`/bookings/${reservedStay.data.id}`, 'PUT', { ...reservedInput, open: true }, email)).status, 200)
+  await page.reload()
+  await page.getByRole('banner').getByRole('button', { name: 'Plan a stay' }).click()
+  await showReservedMonth('someone there')
+  await dialog.getByRole('button', { name: `${dayLabel(day(40))}, someone there`, exact: true }).click()
+  await dialog.getByRole('button', { name: `${dayLabel(day(41))}, someone there`, exact: true }).click()
+  // The host closes their stay after this browser loaded its calendar.
+  assert.equal((await call(`/bookings/${reservedStay.data.id}`, 'PUT', reservedInput, email)).status, 200)
+  await dialog.getByRole('button', { name: 'Save stay' }).click()
+  await expect(dialog.getByRole('alert')).toContainText('without room for more')
+  await expect(dialog).toBeVisible()
+  assert.equal((await call('/bookings')).data.filter(b => b.start === day(40)).length, 1)
+  await page.keyboard.press('Escape')
+  assert.equal((await call(`/bookings/${reservedStay.data.id}`, 'DELETE', undefined, email)).status, 204)
   console.log('Checking distinct, persistent calendar colors…')
   const nextMonth = new Date()
   nextMonth.setDate(1)
@@ -211,7 +241,7 @@ try {
   for (const [address, name] of hosts) {
     if (address !== email) assert.equal((await call('/members', 'PUT', { email: address, displayName: name, version: 0 }, email)).status, 200)
     assert.equal((await call('/bookings', 'POST', {
-      title: `${name}’s stay`, start: `${monthKey}-08`, end: `${monthKey}-12`, guests: 2, names: '', notes: '', open: false
+      title: `${name}’s stay`, start: `${monthKey}-08`, end: `${monthKey}-12`, guests: 2, names: '', notes: '', open: true
     }, address)).status, 201)
   }
   assert.equal((await call('/gatherings', 'POST', {

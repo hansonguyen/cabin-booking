@@ -2,17 +2,19 @@
 
 import { useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { type Booking, dateKey, parseDate, prettyDate } from '../lib/bookings'
+import { type Booking, addDays, dateKey, parseDate, prettyDate, unavailableStay } from '../lib/bookings'
 import { monthWeeks, stayNights } from '../lib/calendar'
 import type { Gathering } from '../lib/gatherings'
 
-/** Picks a date range. Days someone is there, or a gathering is on, are marked but never blocked. */
+/** Picks dates, with closed stays blocking new nights when planning a stay. */
 export default function RangePicker({
   start,
   end,
   today,
   others,
   gatherings,
+  blockClosedStays = false,
+  original,
   onChange
 }: {
   start: string
@@ -20,6 +22,8 @@ export default function RangePicker({
   today: string
   others: Booking[]
   gatherings: Gathering[]
+  blockClosedStays?: boolean
+  original?: Booking
   onChange: (start: string, end: string) => void
 }) {
   const [month, setMonth] = useState(() => {
@@ -72,6 +76,12 @@ export default function RangePicker({
             const inRange = Boolean(start && end && day > start && day < end)
             const gathering = day >= today ? gatheringOn(day) : undefined
             const othersThere = day >= today && busy.has(day)
+            const reserved = blockClosedStays && !!unavailableStay({ start: day, end: addDays(day, 1) }, others, original)
+            const blocked = blockClosedStays && !!unavailableStay(
+              choosingEnd && day > start ? { start, end: day } : { start: day, end: addDays(day, 1) },
+              others,
+              original
+            )
             return (
               <button
                 type="button"
@@ -81,12 +91,13 @@ export default function RangePicker({
                   isStart || isEnd ? 'selected' : '',
                   inRange ? 'in-range' : '',
                   othersThere ? 'busy' : '',
+                  reserved ? 'reserved' : '',
                   gathering ? 'gathering' : '',
                   day === today ? 'today' : ''
                 ].join(' ')}
-                aria-label={`${prettyDate(day, { weekday: 'long', month: 'long', day: 'numeric' })}${gathering ? `, ${gathering.title}` : ''}${othersThere ? ', someone there' : ''}`}
+                aria-label={`${prettyDate(day, { weekday: 'long', month: 'long', day: 'numeric' })}${gathering ? `, ${gathering.title}` : ''}${reserved ? ', reserved' : othersThere ? ', someone there' : ''}`}
                 aria-pressed={isStart || isEnd}
-                disabled={day < today}
+                disabled={day < today || blocked}
                 onClick={() => (choosingEnd && day > start ? onChange(start, day) : onChange(day, ''))}
               >
                 {parseDate(day).getDate()}
@@ -99,6 +110,7 @@ export default function RangePicker({
         <span className="range-key-busy">Someone there</span>
         <span className="range-key-gathering">Family gathering</span>
       </p>
+      {blockClosedStays && <p className="small muted">Reserved nights are unavailable. Existing stays must have room for more to share their dates.</p>}
       {start && end && (
         <button type="button" className="button text small" onClick={() => onChange('', '')}>
           Clear dates

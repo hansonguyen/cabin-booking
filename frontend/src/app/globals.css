@@ -1379,7 +1379,10 @@ dialog::backdrop {
 .range-day:disabled {
   color: #b3a893;
 }
-/* Markers only: overlapping others or a gathering never blocks a day. */
+.range-day.reserved {
+  text-decoration: line-through;
+}
+/* Mark occupied nights and family gatherings. */
 .range-day.gathering::before,
 .range-key-gathering::before {
   content: '';

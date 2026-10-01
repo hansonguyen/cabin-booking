@@ -99,10 +99,26 @@ test('plan, edit, protect, and cancel a stay', async ({ page }) => {
   await expect(page.getByLabel('Others are welcome to join')).not.toBeChecked()
   await page.keyboard.press('Escape')
 
-  // Days someone is there are marked, never blocked; overlapping stays get a heads-up.
+  // Closed stays block arrival, ranges crossing their nights, and new overlapping plans.
   await page.getByRole('banner').getByRole('button', { name: 'Plan a stay' }).click()
   await expect(page.getByLabel('Others are welcome to join')).toBeChecked()
   const dialog = page.getByRole('dialog')
+  for (let i = 0; i < 3 && !(await dialog.getByRole('button', { name: `${dayLabel(start)}, reserved` }).isVisible()); i++)
+    await dialog.getByRole('button', { name: 'Next month' }).click()
+  await expect(dialog.getByRole('button', { name: `${dayLabel(start)}, reserved` })).toBeDisabled()
+  await expect(dialog.getByRole('button', { name: dayLabel(addDays(start, 3)), exact: true })).toBeEnabled()
+  await pickDay(page, addDays(start, -1))
+  await expect(dialog.getByRole('button', { name: `${dayLabel(start)}, reserved` })).toBeEnabled()
+  await expect(dialog.getByRole('button', { name: `${dayLabel(addDays(start, 1))}, reserved` })).toBeDisabled()
+  await expect(dialog.getByRole('button', { name: dayLabel(addDays(start, 3)), exact: true })).toBeDisabled()
+  await page.keyboard.press('Escape')
+  await comingUp.getByRole('button').filter({ hasText: 'Lawrence and friends' }).click()
+  await page.getByRole('button', { name: 'Edit stay' }).click()
+  await page.getByLabel('Others are welcome to join').check()
+  await page.getByRole('button', { name: 'Save stay' }).click()
+
+  // Reopening the host's stay makes its dates available again.
+  await page.getByRole('banner').getByRole('button', { name: 'Plan a stay' }).click()
   for (let i = 0; i < 3 && !(await dialog.getByRole('button', { name: `${dayLabel(start)}, someone there` }).isVisible()); i++)
     await dialog.getByRole('button', { name: 'Next month' }).click()
   await expect(dialog.getByRole('button', { name: `${dayLabel(addDays(start, 1))}, someone there` })).toBeEnabled()

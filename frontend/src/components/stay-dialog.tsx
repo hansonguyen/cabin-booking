@@ -245,6 +245,8 @@ function StayForm({
           today={state.today}
           others={others}
           gatherings={state.gatherings}
+          blockClosedStays
+          original={original}
           onChange={(from, to) => {
             setError('')
             set({ start: from, end: to })
@@ -332,7 +334,7 @@ function StayForm({
               <input type="checkbox" checked={draft.open} onChange={(e) => set({ open: e.target.checked })} />
               <span>
                 Others are welcome to join
-                <small>Shows “room for more” on the calendar.</small>
+                <small>Allows other family members to book overlapping dates. Uncheck to block new overlapping bookings.</small>
               </span>
             </label>
             <label className="field">

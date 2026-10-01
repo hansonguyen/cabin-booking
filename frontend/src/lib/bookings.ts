@@ -51,6 +51,19 @@ export function prettyDate(
 export function overlaps(a: { start: string; end: string }, b: { start: string; end: string }): boolean {
   return a.start < b.end && a.end > b.start
 }
+export function unavailableStay(
+  range: { start: string; end: string },
+  existing: Booking[],
+  original?: Booking
+): Booking | undefined {
+  return existing.find((b) => {
+    if (b.id === original?.id || b.open || b.gatheringId || !overlaps(b, range)) return false
+    // Keep already-booked nights when editing; only newly occupied nights need permission.
+    return !original ||
+      (range.start > b.start ? range.start : b.start) < (original.start > b.start ? original.start : b.start) ||
+      (range.end < b.end ? range.end : b.end) > (original.end < b.end ? original.end : b.end)
+  })
+}
 export function firstName(name: string): string {
   return name.split(' ')[0] || name
 }
@@ -88,7 +101,9 @@ export function validateBooking(
     return `Choose between 1 and ${MAX_GUESTS} people.`
   if (booking.names.length > 300 || booking.notes.length > 2000)
     return 'Please shorten your guest list or notes.'
-  // Stays may overlap. Each person shares one set of plans per gathering.
+  const blocked = unavailableStay(booking, existing, existing.find((b) => b.id === booking.id))
+  if (blocked) return 'Those dates overlap a stay without room for more. Choose different dates.'
+  // Each person shares one set of plans per gathering.
   if (
     booking.gatheringId &&
     existing.some((b) => b.id !== booking.id && b.userId === booking.userId && b.gatheringId === booking.gatheringId)
