@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import { chromium, expect } from '../../frontend/node_modules/@playwright/test/index.mjs'
-import { setup } from './helpers/database.ts'
+import { setup, seedGathering } from './helpers/database.ts'
 import { api } from '../src/api.ts'
 
 // Isolated browser integration: production static build + real API SQL + in-memory DB.
@@ -169,34 +169,33 @@ try {
   await page.getByRole('button', { name: 'Remove stay', exact: true }).click()
   await page.getByRole('button', { name: 'Yes, remove it', exact: true }).click()
   await expect(guestbook.getByText('Relative stay')).toHaveCount(0)
-  console.log('Checking gatherings…')
+  console.log('Checking saved gatherings and retired creation…')
+  await expect(page.getByRole('button', { name: 'Add a gathering' })).toHaveCount(0)
+  assert.equal((await call('/gatherings', 'POST', { title: 'New event', start: '2099-01-01', end: '2099-01-03', notes: '', repeats: false })).status, 410)
   const day = offset => new Date(Date.now() + offset * 86_400_000).toISOString().slice(0, 10)
-  const reunion = await call('/gatherings', 'POST', { title: 'Reunion', start: day(10), end: day(13), notes: 'Potluck.', repeats: false }, email)
-  assert.equal(reunion.status, 201)
+  const reunion = { data: { id: seedGathering(sql, { title: 'Reunion', start: day(10), end: day(13), notes: 'Potluck.', repeats: false }, email) } }
+  const historicalPlans = await call('/bookings', 'POST', { title: 'Relative’s plans', start: day(10), end: day(13), guests: 2, names: '', notes: '', open: true, gatheringId: reunion.data.id }, 'relative@example.com')
+  assert.equal(historicalPlans.status, 201)
   signedInEmail = 'relative@example.com'
   await page.reload()
   const comingUp = page.getByRole('region', { name: 'Coming up' })
   const dialog = page.getByRole('dialog')
   await comingUp.getByRole('button').filter({ hasText: 'Reunion' }).click()
   await expect(dialog.getByRole('button', { name: 'Remove gathering' })).toHaveCount(0)
-  await dialog.getByRole('button', { name: 'Add your plans' }).click()
-  await dialog.getByRole('button', { name: 'Save plans' }).click()
-  await expect(dialog).not.toBeVisible()
+  await expect(dialog.getByRole('button', { name: 'Your plans', exact: true })).toBeVisible()
+  await page.keyboard.press('Escape')
   await expect(comingUp.getByRole('button').filter({ hasText: 'Reunion' })).toContainText('You added plans')
   const plans = (await call('/bookings')).data.find(b => b.gatheringId === reunion.data.id)
   assert.equal(plans.userId, 'relative@example.com')
   await comingUp.getByRole('button').filter({ hasText: 'Reunion' }).click()
-  await dialog.getByRole('button', { name: 'Edit gathering' }).click()
-  await page.getByLabel('Name').fill('Family reunion')
-  await dialog.getByRole('button', { name: 'Save gathering' }).click()
-  await expect(comingUp.getByRole('button').filter({ hasText: 'Family reunion' })).toBeVisible()
-  assert.equal((await call('/gatherings')).data.find(g => g.id === reunion.data.id).title, 'Family reunion')
+  await expect(dialog.getByRole('button', { name: 'Edit gathering' })).toHaveCount(0)
+  await page.keyboard.press('Escape')
   signedInEmail = email
   await page.reload()
-  await comingUp.getByRole('button').filter({ hasText: 'Family reunion' }).click()
+  await comingUp.getByRole('button').filter({ hasText: 'Reunion' }).click()
   await dialog.getByRole('button', { name: 'Remove gathering' }).click()
   await dialog.getByRole('button', { name: 'Yes, remove it' }).click()
-  await expect(comingUp.getByRole('button').filter({ hasText: 'Family reunion' })).toHaveCount(0)
+  await expect(comingUp.getByRole('button').filter({ hasText: 'Reunion' })).toHaveCount(0)
   await expect(comingUp).toContainText('Relative')
   assert.equal((await call('/bookings')).data.find(b => b.id === plans.id).gatheringId, null)
   console.log('Checking reserved nights and availability changes while booking…')
@@ -244,9 +243,7 @@ try {
       title: `${name}’s stay`, start: `${monthKey}-08`, end: `${monthKey}-12`, guests: 2, names: '', notes: '', open: true
     }, address)).status, 201)
   }
-  assert.equal((await call('/gatherings', 'POST', {
-    title: 'Family weekend', start: `${monthKey}-09`, end: `${monthKey}-13`, notes: '', repeats: false
-  }, email)).status, 201)
+  seedGathering(sql, { title: 'Family weekend', start: `${monthKey}-09`, end: `${monthKey}-13`, notes: '', repeats: false }, email)
   signedInEmail = email
   await page.goto('https://cabin.test/#calendar')
   await page.reload()

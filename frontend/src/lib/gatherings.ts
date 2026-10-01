@@ -1,5 +1,4 @@
 import { type Booking, addDays, dateKey, nights, parseDate } from './bookings.ts'
-import { nextYear } from './yearly.ts'
 
 /** A time the whole family goes up. Everyone is assumed to be coming; plans are optional. */
 export type Gathering = {
@@ -45,24 +44,6 @@ export function isGathering(value: unknown): value is Gathering {
 /** The plans people have shared for a gathering, earliest arrival first. */
 export function plansFor(gathering: Gathering, bookings: Booking[]): Booking[] {
   return bookings.filter((b) => b.gatheringId === gathering.id).sort((a, b) => a.start.localeCompare(b.start))
-}
-
-/** Mirrors the Worker: once a yearly gathering ends, add next year's. */
-export function withNextYears(gatherings: Gathering[], today: string, makeId: () => string): Gathering[] {
-  const added: Gathering[] = []
-  const series = new Map<string, Gathering>()
-  for (const g of gatherings) {
-    const latest = series.get(g.seriesId)
-    if (!latest || g.year > latest.year) series.set(g.seriesId, g)
-  }
-  for (let g of series.values()) {
-    for (let i = 0; i < 5 && g.repeats && g.end <= today; i++) {
-      const { start, end } = nextYear(g.start, g.end)
-      g = { ...g, start, end, id: makeId(), year: g.year + 1, version: 1 }
-      added.push(g)
-    }
-  }
-  return added.length ? [...gatherings, ...added] : gatherings
 }
 
 function thanksgivingFrom(now: Date): string {

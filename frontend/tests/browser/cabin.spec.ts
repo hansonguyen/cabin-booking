@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { dateKey, addDays, prettyDate } from '../../src/lib/bookings'
-import { seedGatherings } from '../../src/lib/gatherings'
+import { seedGatherings, seedPlans } from '../../src/lib/gatherings'
 
 const dayLabel = (key: string) => prettyDate(key, { weekday: 'long', month: 'long', day: 'numeric' })
 
@@ -151,45 +151,39 @@ test('plan, edit, protect, and cancel a stay', async ({ page }) => {
   expect(errors).toEqual([])
 })
 
-test('families add plans to a gathering instead of separate stays', async ({ page }) => {
+test('gathering creation is retired and saved plans remain available', async ({ page }) => {
   const errors: string[] = []
   page.on('pageerror', (e) => errors.push(e.message))
   const [thanksgiving] = seedGatherings(new Date())
+  const savedPlans = seedPlans(thanksgiving)
+  await page.addInitScript(({ gathering, plans }) => {
+    if (!localStorage.getItem('lake-mary-gatherings-v1')) {
+      localStorage.setItem('lake-mary-gatherings-v1', JSON.stringify([gathering]))
+      localStorage.setItem('lake-mary-bookings-v1', JSON.stringify(plans))
+    }
+  }, { gathering: thanksgiving, plans: savedPlans })
   await page.setViewportSize({ width: 1440, height: 1100 })
   await page.goto('/#calendar')
   const comingUp = page.getByRole('region', { name: 'Coming up' })
   const dialog = page.getByRole('dialog')
+  await expect(page.getByRole('button', { name: 'Add a gathering' })).toHaveCount(0)
   await comingUp.getByRole('button').filter({ hasText: 'Thanksgiving' }).click()
-  await expect(dialog).toContainText('Everyone’s welcome, no need to sign up.')
   await expect(dialog).toContainText('7 people from 2 families so far')
-  await expect(dialog).toContainText('Repeats every year, around Thanksgiving.')
-  await dialog.getByRole('button', { name: 'Add your plans' }).click()
-  await expect(dialog.getByRole('heading', { name: 'Your plans for Thanksgiving' })).toBeVisible()
-  await expect(dialog).toContainText('Also coming:')
-  await page.getByLabel('Anything the family should know?').fill('Bringing pie.')
-  await dialog.getByRole('button', { name: 'Save plans' }).click()
-  await expect(dialog).not.toBeVisible()
-  await expect(comingUp.getByRole('button').filter({ hasText: 'Thanksgiving' })).toContainText('You, Emma and Hanson added plans')
-
-  // Someone planning a separate stay over the same days is offered the gathering instead.
-  await page.getByLabel('Demo member').selectOption('alex')
-  await page.getByRole('banner').getByRole('button', { name: 'Plan a stay' }).click()
-  await pickDay(page, thanksgiving.start)
+  await expect(dialog).not.toContainText('Repeats every year')
+  await expect(dialog.getByRole('button', { name: 'Edit gathering' })).toHaveCount(0)
+  await dialog.getByRole('button', { name: 'Plan a stay', exact: true }).click()
+  await expect(dialog.getByRole('heading', { name: 'Plan a stay' })).toBeVisible()
   await pickDay(page, thanksgiving.end)
-  await dialog.getByRole('button', { name: 'Make these your plans for Thanksgiving' }).click()
-  await expect(dialog.getByRole('heading', { name: 'Your plans for Thanksgiving' })).toBeVisible()
-  await dialog.getByRole('button', { name: 'Save plans' }).click()
+  await expect(dialog.getByRole('button', { name: /Make these your plans/ })).toHaveCount(0)
+  await expect(page.getByLabel('Others are welcome to join')).toBeChecked()
+  await page.getByLabel('Anything the family should know?').fill('Bringing pie.')
+  await dialog.getByRole('button', { name: 'Save stay' }).click()
   await expect(dialog).not.toBeVisible()
   await page.reload()
-  await comingUp.getByRole('button').filter({ hasText: 'Thanksgiving' }).click()
-  await expect(dialog).toContainText('from 4 families so far')
-  await expect(dialog.getByRole('button', { name: 'Remove gathering' })).not.toBeVisible()
-  await page.keyboard.press('Escape')
-
-  await page.getByRole('button', { name: 'Add a gathering' }).click()
-  await page.getByLabel('Name').fill('Fourth of July')
-  await expect(dialog.getByRole('checkbox', { name: /Happens every year/ })).not.toBeChecked()
-  await page.keyboard.press('Escape')
+  const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('lake-mary-bookings-v1')!))
+  expect(stored).toHaveLength(savedPlans.length + 1)
+  expect(stored.find((stay: { userId: string }) => stay.userId === 'lawrence').gatheringId).toBeNull()
+  for (const original of savedPlans) expect(stored.find((stay: { id: string }) => stay.id === original.id)).toEqual(original)
   await page.setViewportSize({ width: 390, height: 844 })
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   expect(errors).toEqual([])

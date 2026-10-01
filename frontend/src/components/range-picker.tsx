@@ -108,7 +108,7 @@ export default function RangePicker({
       </div>
       <p className="range-key" aria-hidden="true">
         <span className="range-key-busy">Someone there</span>
-        <span className="range-key-gathering">Family gathering</span>
+        {gatherings.length > 0 && <span className="range-key-gathering">Family gathering</span>}
       </p>
       {blockClosedStays && <p className="small muted">Reserved nights are unavailable. Existing stays must have room for more to share their dates.</p>}
       {start && end && (

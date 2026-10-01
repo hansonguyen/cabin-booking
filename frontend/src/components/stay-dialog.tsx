@@ -16,19 +16,17 @@ import {
 import { dateRange, longDateRange, plural } from '../lib/calendar'
 import type { Gathering } from '../lib/gatherings'
 import { sharedBackend } from '../lib/shared-api'
-import { GatheringDetail, GatheringForm } from './gathering-dialog'
+import { GatheringDetail } from './gathering-dialog'
 import RangePicker from './range-picker'
 import { Avatar, Confirm, Modal } from './ui'
 import type { CabinState } from './use-cabin-state'
 
 export type StayMode =
-  | { kind: 'new'; start: string; gatheringId?: string }
+  | { kind: 'new'; start: string }
   | { kind: 'view'; booking: Booking }
   | { kind: 'edit'; booking: Booking }
   | { kind: 'note'; booking: Booking }
   | { kind: 'gathering'; gathering: Gathering }
-  | { kind: 'gathering-new'; start: string }
-  | { kind: 'gathering-edit'; gathering: Gathering }
   | null
 
 export type Shared = {
@@ -42,19 +40,15 @@ export default function StayDialog({ mode, ...shared }: Shared & { mode: StayMod
   const key = !mode
     ? 'closed'
     : mode.kind === 'new'
-      ? `new-${mode.start}-${mode.gatheringId ?? ''}`
-      : mode.kind === 'gathering-new'
-        ? `gathering-new-${mode.start}`
-        : `${mode.kind}-${'booking' in mode ? mode.booking.id : mode.gathering.id}`
+      ? `new-${mode.start}`
+      : `${mode.kind}-${'booking' in mode ? mode.booking.id : mode.gathering.id}`
   return (
     <Modal open={!!mode} onClose={() => shared.setMode(null)} labelledBy="stay-title">
       {mode?.kind === 'view' && <StayDetail key={key} booking={mode.booking} {...shared} />}
-      {mode?.kind === 'new' && <StayForm key={key} start={mode.start} gatheringId={mode.gatheringId} {...shared} />}
+      {mode?.kind === 'new' && <StayForm key={key} start={mode.start} {...shared} />}
       {mode?.kind === 'edit' && <StayForm key={key} original={mode.booking} start={mode.booking.start} {...shared} />}
       {mode?.kind === 'note' && <NoteForm key={key} booking={mode.booking} {...shared} />}
       {mode?.kind === 'gathering' && <GatheringDetail key={key} gathering={mode.gathering} {...shared} />}
-      {mode?.kind === 'gathering-new' && <GatheringForm key={key} start={mode.start} {...shared} />}
-      {mode?.kind === 'gathering-edit' && <GatheringForm key={key} original={mode.gathering} start={mode.gathering.start} {...shared} />}
     </Modal>
   )
 }
@@ -162,27 +156,25 @@ function StayDetail({ booking, state, memberOf, setMode }: Shared & { booking: B
 function StayForm({
   original,
   start,
-  gatheringId,
   state,
   members,
   memberOf,
   setMode
-}: Shared & { original?: Booking; start: string; gatheringId?: string }) {
+}: Shared & { original?: Booking; start: string }) {
   const user = memberOf(state.userId)
   const [draft, setDraft] = useState<Booking>(() => {
     if (original) return original
-    const joining = state.gatherings.find((g) => g.id === gatheringId)
     return {
       id: crypto.randomUUID(),
       userId: state.userId,
       title: '',
-      start: joining ? joining.start : start,
-      end: joining ? joining.end : '',
+      start,
+      end: '',
       guests: 2,
       names: '',
       notes: '',
       open: true,
-      gatheringId: joining?.id ?? null
+      gatheringId: null
     }
   })
   const [error, setError] = useState('')
@@ -192,8 +184,6 @@ function StayForm({
   const gathering = state.gatherings.find((g) => g.id === draft.gatheringId)
   const chosen = Boolean(draft.start && draft.end)
   const alsoThere = chosen ? others.filter((b) => overlaps(b, draft)).sort((a, b) => a.start.localeCompare(b.start)) : []
-  const gatheringsNearby = chosen && !gathering ? state.gatherings.filter((g) => overlaps(g, draft)) : []
-  const myPlans = (g: Gathering) => others.find((b) => b.gatheringId === g.id && b.userId === state.userId)
 
   async function submit(e: FormEvent) {
     e.preventDefault()
@@ -255,31 +245,10 @@ function StayForm({
         <p className="range-summary" aria-live="polite">
           {summary}
         </p>
-        {(gatheringsNearby.length > 0 || alsoThere.length > 0) && (
+        {alsoThere.length > 0 && (
           <div className="heads-up" aria-live="polite">
-            {gatheringsNearby.map((g) => {
-              const existing = myPlans(g)
-              return (
-                <p key={g.id} className="heads-up-gathering">
-                  These days overlap <strong>{g.title}</strong> ({dateRange(g.start, g.end)}), when everyone goes up.{' '}
-                  {existing ? (
-                    <button type="button" className="link" onClick={() => setMode({ kind: 'edit', booking: existing })}>
-                      Edit your plans for it instead
-                    </button>
-                  ) : (
-                    <button type="button" className="link" onClick={() => set({ gatheringId: g.id })}>
-                      Make these your plans for {g.title}
-                    </button>
-                  )}
-                </p>
-              )
-            })}
-            {alsoThere.length > 0 && (
-              <>
-                <p>{gathering ? 'Also coming:' : 'Heads up, others will be there too:'}</p>
-                <OthersList stays={alsoThere} state={state} memberOf={memberOf} />
-              </>
-            )}
+            <p>{gathering ? 'Also coming:' : 'Heads up, others will be there too:'}</p>
+            <OthersList stays={alsoThere} state={state} memberOf={memberOf} />
           </div>
         )}
         <div className="form-row">

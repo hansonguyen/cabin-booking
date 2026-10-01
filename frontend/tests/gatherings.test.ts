@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import type { Booking } from '../src/lib/bookings.ts'
 import { monthWeeks, upcoming } from '../src/lib/calendar.ts'
-import { type Gathering, isGathering, seedGatherings, validateGathering, withNextYears } from '../src/lib/gatherings.ts'
+import { type Gathering, isGathering, seedGatherings, validateGathering } from '../src/lib/gatherings.ts'
 import { cabinStatus } from '../src/lib/greeting.ts'
 import { nextYear } from '../src/lib/yearly.ts'
 
@@ -20,15 +20,6 @@ test('yearly gatherings keep their place around a holiday, or their weekday of t
   assert.equal(nextYear('2026-05-22', '2026-05-25').start, '2027-05-28')
   assert.deepEqual(nextYear('2026-08-14', '2026-08-16'), { start: '2027-08-13', end: '2027-08-15', basis: 'the second Friday of August' })
   assert.equal(nextYear('2026-08-29', '2026-08-31').basis, 'the last Saturday of August')
-})
-
-test('next year’s gathering appears once this one ends, and only then', () => {
-  const makeId = () => 'next'
-  assert.equal(withNextYears([thanksgiving], '2026-11-28', makeId).length, 1)
-  const after = withNextYears([thanksgiving], '2026-11-29', makeId)
-  assert.deepEqual(after.map((g) => [g.year, g.start]), [[2026, '2026-11-25'], [2027, '2027-11-24']])
-  assert.equal(withNextYears([{ ...thanksgiving, repeats: false }], '2027-01-01', makeId).length, 1)
-  assert.equal(withNextYears(after, '2026-12-01', makeId).length, 2)
 })
 
 test('gathering validation and stored-data checks', () => {

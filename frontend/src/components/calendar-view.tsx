@@ -83,10 +83,6 @@ export default function CalendarView({
             )}
           </div>
         </div>
-        <button className="button quiet" onClick={() => openStay({ kind: 'gathering-new', start: '' })}>
-          <Users size={16} aria-hidden="true" />
-          Add a gathering
-        </button>
       </div>
 
       <section className="card month" aria-label="Cabin calendar">
@@ -176,7 +172,7 @@ export default function CalendarView({
       )}
       <p className="fine-print">
         You can book overlapping dates when existing stays have room for more. Otherwise, their nights are reserved. Tap a day
-        to plan a stay. For holidays when everyone goes up, add a gathering once instead of everyone adding a stay.
+        to plan your own stay.
       </p>
 
       <div className="two-up">

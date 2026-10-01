@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { type Booking, dateKey, isBooking, members, seedBookings } from '../lib/bookings'
 import { type Article, type CareTask, type CabinData, initialCabinData, isCabinData } from '../lib/cabin-care'
-import { type Gathering, isGathering, seedGatherings, seedPlans, withNextYears } from '../lib/gatherings'
+import { type Gathering, isGathering } from '../lib/gatherings'
 import { apiRequest, sharedBackend } from '../lib/shared-api'
 
 const BOOKINGS_STORE = 'lake-mary-bookings-v1'
@@ -75,23 +75,13 @@ export function useCabinState() {
       const family = localStorage.getItem(GATHERINGS_STORE)
       const parsedFamily: unknown = family ? JSON.parse(family) : null
       if (family && (!Array.isArray(parsedFamily) || !parsedFamily.every(isGathering))) throw new Error('Invalid saved data')
-      if (Array.isArray(parsedFamily)) {
-        const current = withNextYears(parsedFamily, dateKey(now), () => crypto.randomUUID())
-        if (current !== parsedFamily) localStorage.setItem(GATHERINGS_STORE, JSON.stringify(current))
-        setGatherings(current)
-      } else {
-        // First visit to the preview, or saved stays from before gatherings existed.
-        const sample = seedGatherings(now)
-        setGatherings(sample)
-        if (!saved) setBookings((current) => [...current, ...seedPlans(sample[0])])
-      }
+      setGatherings(Array.isArray(parsedFamily) ? parsedFamily.map((g) => ({ ...g, repeats: false })) : [])
       const member = localStorage.getItem(MEMBER_STORE)
       if (members.some((m) => m.id === member)) setUserIdState(member!)
     } catch {
       setNotice('Saved stays couldn’t be read, so this preview is showing sample stays. Saving a stay will replace the unreadable data.')
-      const sample = seedGatherings(now)
-      setGatherings(sample)
-      setBookings([...seedBookings(now), ...seedPlans(sample[0])])
+      setGatherings([])
+      setBookings(seedBookings(now))
     }
     setReady(true)
     try {
@@ -169,38 +159,6 @@ export function useCabinState() {
     localStorage.setItem(BOOKINGS_STORE, JSON.stringify(nextBookings))
     setGatherings(next)
     setBookings(nextBookings)
-  }
-
-  /** Saves a new or edited gathering. Plans that matched its old dates move with it. */
-  async function saveGathering(draft: Gathering): Promise<string | null> {
-    if (busy.current) return 'Still saving…'
-    busy.current = true
-    const old = gatherings.find((g) => g.id === draft.id)
-    try {
-      if (sharedBackend) {
-        const saved = await apiRequest<Gathering>(old ? `/api/gatherings/${draft.id}` : '/api/gatherings', old ? 'PUT' : 'POST', draft)
-        const [family, trips] = await Promise.all([apiRequest<Gathering[]>('/api/gatherings'), apiRequest<Booking[]>('/api/bookings')])
-        setGatherings(family.some((g) => g.id === saved.id) ? family : [...family, saved])
-        setBookings(trips)
-      } else {
-        const saved = { ...draft, version: (old?.version ?? 0) + 1, createdBy: old ? old.createdBy : userId }
-        persistGatherings(
-          [...gatherings.filter((g) => g.id !== draft.id).map((g) => (g.seriesId === draft.seriesId ? { ...g, repeats: draft.repeats } : g)), saved],
-          bookings.map((b) =>
-            old && b.gatheringId === old.id && b.start === old.start && b.end === old.end ? { ...b, start: draft.start, end: draft.end } : b
-          )
-        )
-      }
-      return null
-    } catch (cause) {
-      if (sharedBackend) {
-        apiRequest<Gathering[]>('/api/gatherings').then(setGatherings).catch(() => {})
-        return message(cause, 'Could not save the gathering.')
-      }
-      return 'Your browser couldn’t save this gathering. Allow site storage and try again.'
-    } finally {
-      busy.current = false
-    }
   }
 
   /** Removes one gathering and stops it repeating. Plans stay on the calendar as stays. */
@@ -318,7 +276,6 @@ export function useCabinState() {
     setNotice,
     saveBooking,
     removeBooking,
-    saveGathering,
     removeGathering,
     saveGuestbookNote,
     saveCare

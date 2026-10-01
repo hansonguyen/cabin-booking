@@ -34,7 +34,7 @@ The exact dashboard names can change. The [Access for Workers guide](https://dev
 ## Data and operations
 
 - The `bookings` table stores trip details and the Access email of the host. New nights can overlap only when every existing stay welcomes company (`open_to_company`), or is part of a family gathering. Availability is checked atomically in each booking write. Existing overlapping nights are preserved during edits; closing a stay blocks future bookings without canceling saved plans. A stay can be someone's plans for a gathering (`gathering_id`); each person has at most one set of plans per gathering. Only the host may edit a trip; the host or family administrator may delete it.
-- The `gatherings` table stores times the whole family goes up, such as Thanksgiving. Everyone is assumed to be coming; plans are optional. See [Gatherings](#gatherings).
+- The `gatherings` table retains historical family events and linked plans. New gatherings, event editing, and yearly creation are retired; the calendar uses individual stays. See [Gatherings](#gatherings).
 - `tasks` stores list items, assignees, priority, status, and server-recorded completion details. `book_pages` stores house basics and how-to pages, including the verified flag and last editor. Each row has its own version: different items can be edited independently, while stale edits to the same item return HTTP 409. All approved members may edit these shared records.
 - `cabin_care` is retained as a read-only snapshot of the pre-migration tasks and pages. Migration `0003_list_and_book.sql` copies existing records into the new tables without changing IDs, content, authors, or page update dates. Previously completed tasks retain an unknown completion date. The snapshot is not the active store.
 - Guestbook notes remain attached to their stay in `bookings.notes`, matching the frontend. The note-only route checks the host and the last update time and never changes stay dates.
@@ -120,11 +120,11 @@ Migration 0005 and Worker version `de25446e-cffd-4433-888e-5698cefe27c8` were de
 
 Migration `0006_gatherings.sql` removes the one-stay-per-night rule (`booking_nights`), raises the per-stay limit from 12 to 30 people, adds `gatherings`, and adds `bookings.gathering_id`. The bookings table is rebuilt to change its guest limit; every existing column and row is copied unchanged, and the migration test checks this.
 
-- `GET /api/gatherings` lists gatherings. For each yearly gathering whose latest occurrence has ended, it first adds next year's (`INSERT OR IGNORE` on `series_id, year`, so concurrent reads cannot duplicate it). A gathering that spans a holiday keeps its place around it: Wednesday before Thanksgiving through Sunday stays that way. Otherwise it keeps the same weekday of the month. The rule lives in `frontend/src/lib/yearly.ts` and is shared with the frontend so the "next year" preview matches.
-- `POST /api/gatherings` takes `{ title, start, end, notes, repeats }` and records the signed-in email as creator.
-- `PUT /api/gatherings/:id` takes the same fields plus `version`. Any signed-in member may edit, like the shared list. Plans whose dates exactly matched the old dates move with the gathering; custom arrival or departure days are left alone. Turning `repeats` on or off applies to the whole series.
-- `DELETE /api/gatherings/:id` takes `{ version }` and requires the creator or `ADMIN_EMAIL`. It also stops the series repeating, otherwise next year's would reappear. Plans people added stay as ordinary stays (`ON DELETE SET NULL`).
-- Stays accept an optional `gatheringId`; plans must overlap the gathering's dates.
+- `GET /api/gatherings` lists saved records without generating future years. Returned records have `repeats: false`.
+- `POST /api/gatherings` and `PUT /api/gatherings/:id` return HTTP 410, including requests from older browser tabs.
+- `DELETE /api/gatherings/:id` takes `{ version }` and requires the creator or `ADMIN_EMAIL`. Saved individual plans remain ordinary stays (`ON DELETE SET NULL`).
+- Existing gathering records and linked plans remain readable. New frontend stays are independent, and no creation button or gathering suggestion appears. Legacy `gatheringId` bookings remain compatible with older saved plans.
+- This retirement needs no database migration and deletes no family records.
 
 ### Rollout
 
@@ -136,6 +136,6 @@ Deployed September 29, 2026 to `cabin.lakemary.workers.dev` as Worker version `9
 
 ### Gathering rollout safety
 
-Changing or stopping annual repeats increments the versions of affected years, so an older tab cannot silently restart the series. Automatic rollover checks that its source still exists, still repeats, and has not changed before inserting another year. The frontend refreshes related records after removing a gathering.
+Annual repeat creation is retired. Existing series metadata remains stored for compatibility, but reads cannot create another event and older tabs cannot re-enable event editing. The frontend refreshes related records after removing a saved gathering.
 
 Migration 0006 preserves existing booking fields while rebuilding the table for overlapping stays and the 30-person limit. Apply it immediately before deploying the new Worker. Do not roll back to the pre-gathering Worker alone: it expects the removed `booking_nights` table. The pre-migration recovery bookmark for September 29, 2026 is `0000001e-00000000-000050f5-cf48af20d30962178d152c36de6f77c7`, subject to the plan's recovery window.

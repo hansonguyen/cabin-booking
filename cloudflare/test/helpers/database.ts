@@ -2,6 +2,15 @@ import { readFileSync } from 'node:fs'
 import { DatabaseSync } from 'node:sqlite'
 import { api } from '../../src/api.ts'
 import type { Env } from '../../src/env.ts'
+import type { GatheringInput } from '../../src/bookings.ts'
+
+/** Historical fixture only: the public API no longer creates gatherings. */
+export function seedGathering(sql: DatabaseSync, input: GatheringInput, email = 'host@example.com', id = crypto.randomUUID(), seriesId = id) {
+  sql.prepare(`INSERT INTO gatherings (id, series_id, year, title, start_date, end_date, notes, repeats, created_by, updated_by, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+    .run(id, seriesId, Number(input.start.slice(0, 4)), input.title, input.start, input.end, input.notes, Number(input.repeats), email, email, new Date().toISOString())
+  return id
+}
 
 // Run the real route SQL on SQLite with transactional D1 batch semantics.
 export function setup(legacy = { version: 1, tasks: [] as object[], articles: [] as object[] }) {
